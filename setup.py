@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-# $Id: setup.py 2 2006-09-28 22:08:17Z s0undt3ch $
+# $Id: setup.py 6 2006-09-28 22:53:31Z s0undt3ch $
 
 from setuptools import setup, find_packages
 
 PACKAGE = 'TracWikiNotification'
-VERSION = '0.1.0'
+VERSION = '0.1.0rc1'
 AUTHOR = 'Pedro Algarvio'
 AUTHOR_EMAIL = 'ufs@ufsoft.org'
 SUMMARY = "Trac Plugin to allow email notification of changes on wiki pages"
@@ -20,6 +20,41 @@ that they wish to be notified(by email) when a change occurs on it.
 You can find more info on the
 `Trac WikiNotification <http://wikinotification.ufsoft.org/>`_ site where bugs and new
 feature requests should go to.
+
+
+Enabling the Plugin
+-------------------
+It's as simple as::
+
+   [componentes]
+   wikinotification.* = enabled
+
+
+Available Config Options
+------------------------
+These are the options available to include on your *trac.ini*.
+
+=====================  ====================  ===========
+**Config Setting**     **Default Value**     **Explanation**
+---------------------  --------------------  -----------
+*redirect_time*        5 (in secconds)       The default secconds a redirect should take when
+                                             watching/un-watching a wiki page.
+                                             This value is also definable per user, ie, user
+                                             is able to configure this, of course for himself.
+---------------------  --------------------  -----------
+*smtp_always_bcc*      *empty*               Email address(es) to always send notifications to,
+                                             addresses do not appear publicly (Bcc:).
+---------------------  --------------------  -----------
+*smtp_always_cc*       *empty*               Email address(es) to always send notifications to,
+                                             addresses can be see by all recipients (Cc:).
+---------------------  --------------------  -----------
+*smtp_from*            trac.wiki\@localhost  Sender address to use in notification emails.
+---------------------  --------------------  -----------
+*use_public_cc*        False                 Recipients can see email addresses of other
+                                             CC'ed recipients. If this option is
+                                             disabled(the default), recipients are put on BCC.
+=====================  ====================  ===========
+
 
 Download and Installation
 -------------------------
