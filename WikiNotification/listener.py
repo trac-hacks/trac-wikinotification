@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: listener.py 2 2006-09-28 22:08:17Z s0undt3ch $
+# $Id: listener.py 4 2006-09-28 22:16:50Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/listener.py $
-# $LastChangedDate: 2006-09-28 23:08:17 +0100 (Thu, 28 Sep 2006) $
-#             $Rev: 2 $
+# $LastChangedDate: 2006-09-28 23:16:50 +0100 (Thu, 28 Sep 2006) $
+#             $Rev: 4 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -16,11 +16,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: listener.py 2 2006-09-28 22:08:17Z s0undt3ch $
+# $Id: listener.py 4 2006-09-28 22:16:50Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/listener.py $
-# $LastChangedDate: 2006-09-28 23:08:17 +0100 (Thu, 28 Sep 2006) $
-#             $Rev: 2 $
+# $LastChangedDate: 2006-09-28 23:16:50 +0100 (Thu, 28 Sep 2006) $
+#             $Rev: 4 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -53,8 +53,9 @@ class WikiChangeListener(Component):
         wne.notify("added", page, version, time, comment, author, ipnr)
 
     def wiki_page_changed(self, page, version, t, comment, author, ipnr):
+        time = t
         wne = WikiNotifyEmail(page.env)
-        wne.notify("modified", page, version, time=t, comment, author, ipnr)
+        wne.notify("modified", page, version, time, comment, author, ipnr)
 
     def wiki_page_deleted(self, page):
         req = self._get_req()
