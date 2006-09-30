@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 10 2006-09-30 06:09:43Z s0undt3ch $
+# $Id: notification.py 12 2006-09-30 23:06:56Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2006-09-30 07:09:43 +0100 (Sat, 30 Sep 2006) $
-#             $Rev: 10 $
+# $LastChangedDate: 2006-10-01 00:06:56 +0100 (Sun, 01 Oct 2006) $
+#             $Rev: 12 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -222,20 +222,29 @@ class WikiNotifyEmail(NotifyEmail):
                 raise TracError, "Ticket contains non-Ascii chars. " \
                         "Please change encoding setting"
 
-        msg = MIMEText(body, 'plain')
-        msg.add_header(
-            'Content-Disposition',
-            'inline; filename="message"')
+
         mail = MIMEMultipart()
-        mail.preamble = 'This is a multi-part message in MIME format.'
-        mail.attach(msg)
-        attach = MIMEText(self.wikidiff, 'x-patch')
-        attach.add_header(
-            'Content-Disposition',
-            'inline; filename="' + self.page.name + '.diff"')
-        mail.attach(attach)
+        # With MIMEMultipart the charset has to be set before any parts
+        # are added.
         del mail['Content-Transfer-Encoding']
         mail.set_charset(self._charset)
+        mail.preamble = 'This is a multi-part message in MIME format.'
+
+        # The text Message
+        msg = MIMEText(body, 'plain')
+        msg.add_header('Content-Disposition', 'inline', filename="message")
+        del msg['Content-Transfer-Encoding']
+        msg.set_charset(self._charset)
+        mail.attach(msg)
+
+        # The Diff Attachment
+        attach = MIMEText(self.wikidiff, 'x-patch')
+        attach.add_header('Content-Disposition', 'inline',
+                          filename=self.page.name + '.diff')
+        del attach['Content-Transfer-Encoding']
+        attach.set_charset(self._charset)
+        mail.attach(attach)
+
         self.add_headers(mail, headers);
         self.add_headers(mail, mime_headers);
 
