@@ -13,10 +13,9 @@ Page URL: <<?cs var:link ?>>
 Diff URL: <<?cs var:linkdiff ?>>
 Revision <?cs var:version ?> 
 Comment: <?cs var:comment ?>
-Changes:
-  
-<?cs var:diff ?>
 
+Changes on attached <?cs var:name ?>.diff file.
+  
 <?cs elif:action == 'deleted' ?>
 Deleted page "<?cs var:name ?>" by <?cs var:author ?> from <?cs var:ip ?>
 

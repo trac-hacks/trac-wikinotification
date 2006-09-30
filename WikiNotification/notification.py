@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 2 2006-09-28 22:08:17Z s0undt3ch $
+# $Id: notification.py 10 2006-09-30 06:09:43Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2006-09-28 23:08:17 +0100 (Thu, 28 Sep 2006) $
-#             $Rev: 2 $
+# $LastChangedDate: 2006-09-30 07:09:43 +0100 (Sat, 30 Sep 2006) $
+#             $Rev: 10 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -20,6 +20,12 @@ from trac.wiki.model import WikiPage
 from trac.versioncontrol.diff import unified_diff
 from trac.notification import NotifyEmail
 from trac.config import Option, BoolOption
+
+diff_header = """Index: %s
+===================================================================
+--- %s (version: %s)
++++ %s (version: %s)
+"""
 
 class WikiNotificationSystem(Component):
     smtp_from = Option(
@@ -84,11 +90,16 @@ class WikiNotifyEmail(NotifyEmail):
             oldpage = WikiPage(self.env, page.name, page.version - 1)
             self.hdf.set_unescaped("oldversion", oldpage.version)
             self.hdf.set_unescaped("oldtext", oldpage.text)
-            diff = ""
+            diff = diff_header % (
+                self.page.name,
+                self.page.name,
+                oldpage.version,
+                self.page.name,
+                self.page.version
+            )
             for line in unified_diff(oldpage.text.splitlines(),
                                      page.text.splitlines(), context=3):
-                diff = diff + "%s\n" % line
-            self.hdf.set_unescaped('diff', diff)
+                self.wikidiff = diff = diff + "%s\n" % line
 
         projname = self.config.get('project', 'name')
         subject = '[%s] Notification: %s %s' % (
@@ -127,10 +138,28 @@ class WikiNotifyEmail(NotifyEmail):
         self.env.log.debug('TO\'s TO NOTIFY: %s', tos)
         return (tos, [])
 
-    def send(self, torcpts, ccrcpts):
+    def send(self, torcpts, ccrcpts, mime_headers={}):
+        import re
+        from email.MIMEText import MIMEText
+        from email.MIMEMultipart import MIMEMultipart
+        from email.Utils import formatdate, formataddr
+        from trac import __version__
+        body = self.hdf.render(self.template_name)
+        projname = self.config.get('project', 'name')
+        public_cc = self.config['wiki-notification'].get('smtp_public_cc')
+
+        headers = {}
+        headers['X-Mailer'] = 'Trac %s, by Edgewall Software' % __version__
+        headers['X-Trac-Version'] =  __version__
+        headers['X-Trac-Project'] =  projname
+        headers['X-URL'] = self.config.get('project', 'url')
+        headers['Subject'] = self.subject
+        headers['From'] = (projname, self.from_email)
+        headers['Sender'] = self.from_email
+        headers['Reply-To'] = self.replyto_email
+
         always_cc = self.config['wiki-notification'].get('smtp_always_cc')
         always_bcc = self.config['wiki-notification'].get('smtp_always_bcc')
-        self.public_cc = self.config['wiki-notification'].get('smtp_public_cc')
         hdrs = {}
         dest = filter(None, torcpts) or filter(None, ccrcpts) or \
                 filter(None, [always_cc]) or filter(None, [always_bcc])
@@ -139,10 +168,81 @@ class WikiNotifyEmail(NotifyEmail):
             self.env.log.info('no recipient for a wiki notification')
             return
 
-        hdrs['Message-ID'] = self.get_message_id(dest[0])
-        hdrs['X-Trac-Wiki-URL'] = self.env.abs_href.wiki(self.page.name)
+        headers['Message-ID'] = self.get_message_id(dest[0])
+        headers['X-Trac-Wiki-URL'] = self.env.abs_href.wiki(self.page.name)
         if not self.newwiki:
-            hdrs['In-Reply-To'] = self.get_message_id(dest[0])
-            hdrs['References'] = self.get_message_id(dest[0])
+            headers['In-Reply-To'] = self.get_message_id(dest[0])
+            headers['References'] = self.get_message_id(dest[0])
 
-        NotifyEmail.send(self, torcpts, ccrcpts, hdrs)
+        def build_addresses(rcpts):
+            """Format and remove invalid addresses"""
+            return filter(lambda x: x, \
+                          [self.get_smtp_address(addr) for addr in rcpts])
+
+        def remove_dup(rcpts, all):
+            """Remove duplicates"""
+            tmp = []
+            for rcpt in rcpts:
+                if not rcpt in all:
+                    tmp.append(rcpt)
+                    all.append(rcpt)
+            return (tmp, all)
+
+        toaddrs = build_addresses(torcpts)
+        ccaddrs = build_addresses(ccrcpts)
+        accparam = self.config['wiki-notification'].get('smtp_always_cc')
+        accaddrs = accparam and \
+                build_addresses(accparam.replace(',', ' ').split()) or []
+        bccparam = self.config['wiki-notification'].get('smtp_always_bcc')
+        bccaddrs = bccparam and \
+                build_addresses(bccparam.replace(',', ' ').split()) or []
+        recipients = []
+        (toaddrs, recipients) = remove_dup(toaddrs, recipients)
+        (ccaddrs, recipients) = remove_dup(ccaddrs, recipients)
+        (accaddrs, recipients) = remove_dup(accaddrs, recipients)
+        (bccaddrs, recipients) = remove_dup(bccaddrs, recipients)
+
+        # if there is not valid recipient, leave immediately
+        if len(recipients) < 1:
+            return
+
+        pcc = accaddrs
+        if public_cc:
+            pcc += ccaddrs
+            if toaddrs:
+                headers['To'] = ', '.join(toaddrs)
+        if pcc:
+            headers['Cc'] = ', '.join(pcc)
+        headers['Date'] = formatdate()
+        # sanity check
+        if not self._charset.body_encoding:
+            try:
+                dummy = body.encode('ascii')
+            except UnicodeDecodeError:
+                raise TracError, "Ticket contains non-Ascii chars. " \
+                        "Please change encoding setting"
+
+        msg = MIMEText(body, 'plain')
+        msg.add_header(
+            'Content-Disposition',
+            'inline; filename="message"')
+        mail = MIMEMultipart()
+        mail.preamble = 'This is a multi-part message in MIME format.'
+        mail.attach(msg)
+        attach = MIMEText(self.wikidiff, 'x-patch')
+        attach.add_header(
+            'Content-Disposition',
+            'inline; filename="' + self.page.name + '.diff"')
+        mail.attach(attach)
+        del mail['Content-Transfer-Encoding']
+        mail.set_charset(self._charset)
+        self.add_headers(mail, headers);
+        self.add_headers(mail, mime_headers);
+
+        self.env.log.debug("Sending SMTP notification to %s on port %d to %s"
+                           % (self.smtp_server, self.smtp_port, recipients))
+        msgtext = mail.as_string()
+        # Ensure the message complies with RFC2822: use CRLF line endings
+        recrlf = re.compile("\r?\n")
+        msgtext = "\r\n".join(recrlf.split(msgtext))
+        self.server.sendmail(mail['From'], recipients, msgtext)

@@ -1,26 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: listener.py 4 2006-09-28 22:16:50Z s0undt3ch $
+# $Id: listener.py 10 2006-09-30 06:09:43Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/listener.py $
-# $LastChangedDate: 2006-09-28 23:16:50 +0100 (Thu, 28 Sep 2006) $
-#             $Rev: 4 $
-#   $LastChangedBy: s0undt3ch $
-# =============================================================================
-# Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
-#
-# Please view LICENSE for additional licensing information.
-# =============================================================================
-
-# -*- coding: utf-8 -*-
-# vim: sw=4 ts=4 fenc=utf-8
-# =============================================================================
-# $Id: listener.py 4 2006-09-28 22:16:50Z s0undt3ch $
-# =============================================================================
-#             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/listener.py $
-# $LastChangedDate: 2006-09-28 23:16:50 +0100 (Thu, 28 Sep 2006) $
-#             $Rev: 4 $
+# $LastChangedDate: 2006-09-30 07:09:43 +0100 (Sat, 30 Sep 2006) $
+#             $Rev: 10 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
