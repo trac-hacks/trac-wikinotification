@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 12 2006-09-30 23:06:56Z s0undt3ch $
+# $Id: notification.py 15 2006-10-02 23:37:04Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2006-10-01 00:06:56 +0100 (Sun, 01 Oct 2006) $
-#             $Rev: 12 $
+# $LastChangedDate: 2006-10-03 00:37:04 +0100 (Tue, 03 Oct 2006) $
+#             $Rev: 15 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -21,10 +21,10 @@ from trac.versioncontrol.diff import unified_diff
 from trac.notification import NotifyEmail
 from trac.config import Option, BoolOption
 
-diff_header = """Index: %s
+diff_header = """Index: %(name)s
 ===================================================================
---- %s (version: %s)
-+++ %s (version: %s)
+--- %(name)s (version: %(oldversion)s)
++++ %(name)s (version: %(version)s)
 """
 
 class WikiNotificationSystem(Component):
@@ -86,24 +86,22 @@ class WikiNotifyEmail(NotifyEmail):
         self.hdf.set_unescaped('linkdiff', "%s?action=diff&version=%i" % \
                                (self.env.abs_href.wiki(page.name),
                                 page.version))
-        if page.version > 0:
+        if page.version > 0 and action == 'modified':
+            diff = diff_header % {'name': self.page.name,
+                                  'version': self.page.version,
+                                  'oldversion': self.page.version -1
+                                 }
             oldpage = WikiPage(self.env, page.name, page.version - 1)
             self.hdf.set_unescaped("oldversion", oldpage.version)
             self.hdf.set_unescaped("oldtext", oldpage.text)
-            diff = diff_header % (
-                self.page.name,
-                self.page.name,
-                oldpage.version,
-                self.page.name,
-                self.page.version
-            )
             for line in unified_diff(oldpage.text.splitlines(),
                                      page.text.splitlines(), context=3):
-                self.wikidiff = diff = diff + "%s\n" % line
+                diff += "%s\n" % line
+                self.wikidiff = diff
 
         projname = self.config.get('project', 'name')
-        subject = '[%s] Notification: %s %s' % (
-            projname, page.name, action.replace('_', ' '))
+        subject = '[%s] Notification: %s %s' % (projname, page.name,
+                                                action.replace('_', ' '))
 
         NotifyEmail.notify(self, page.name, subject)
 
@@ -236,14 +234,17 @@ class WikiNotifyEmail(NotifyEmail):
         del msg['Content-Transfer-Encoding']
         msg.set_charset(self._charset)
         mail.attach(msg)
-
-        # The Diff Attachment
-        attach = MIMEText(self.wikidiff, 'x-patch')
-        attach.add_header('Content-Disposition', 'inline',
-                          filename=self.page.name + '.diff')
-        del attach['Content-Transfer-Encoding']
-        attach.set_charset(self._charset)
-        mail.attach(attach)
+        try:
+            # The Diff Attachment
+            attach = MIMEText(self.wikidiff, 'x-patch')
+            attach.add_header('Content-Disposition', 'inline',
+                              filename=self.page.name + '.diff')
+            del attach['Content-Transfer-Encoding']
+            attach.set_charset(self._charset)
+            mail.attach(attach)
+        except AttributeError:
+            # We don't have a wikidiff to attach
+            pass
 
         self.add_headers(mail, headers);
         self.add_headers(mail, mime_headers);
