@@ -16,18 +16,18 @@ Enabling the Plugin
 -------------------
 It's as simple as::
 
-   [componentes]
+   [components]
    ctxtnavadd.* = enabled
    wikinotification.* = enabled
 
-Available Config Options
+Available Configuration Options
 ------------------------
-These are the options available to include on your *trac.ini*.
+These are the options available to include on your *trac.ini* under *wiki-notification*.
 
 =====================  ====================  ================================
  **Config Setting**     **Default Value**     **Explanation**
 ---------------------  --------------------  --------------------------------
-*redirect_time*        5 (in secconds)       The default secconds a redirect should take when
+*redirect_time*        5 (in seconds)       The default seconds a redirect should take when
                                              watching/un-watching a wiki page.
                                              This value is also definable per user, ie, user
                                              is able to configure this, of course for himself.
@@ -62,3 +62,4 @@ Trac WikiNotification can be installed with `Easy Install
 <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ by typing::
 
     > easy_install TracWikiNotification
+
