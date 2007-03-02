@@ -6,6 +6,8 @@ Trac Wiki Notification is a pluggin that allows users(even anonymous,
 as long as email is set) to select the wiki pages that they wish to
 be notified(by email) when a change occurs on it.
 
+**Note**: The user updating the wiki page won't be notified about his own changes.
+
 You can find more info on the
 `Trac WikiNotification <http://wikinotification.ufsoft.org/>`_ site where bugs and new
 feature requests should go to.
@@ -15,6 +17,7 @@ Enabling the Plugin
 It's as simple as::
 
    [componentes]
+   ctxtnavadd.* = enabled
    wikinotification.* = enabled
 
 Available Config Options
@@ -41,6 +44,15 @@ These are the options available to include on your *trac.ini*.
                                              CC'ed recipients. If this option is
                                              disabled(the default), recipients are put on BCC.
 =====================  ====================  ================================
+
+If you want to override these settings then you can include it like the following example::
+
+   [wiki-notification]
+   redirect_time = 5
+   smtp_always_bcc =
+   smtp_always_cc = 
+   smtp_from = trac.wiki@localhost 
+   use_public_cc = false
 
 
 Download and Installation
