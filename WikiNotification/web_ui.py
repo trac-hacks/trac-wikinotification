@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: web_ui.py 2 2006-09-28 22:08:17Z s0undt3ch $
+# $Id: web_ui.py 21 2007-10-23 18:52:51Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/web_ui.py $
-# $LastChangedDate: 2006-09-28 23:08:17 +0100 (Thu, 28 Sep 2006) $
-#             $Rev: 2 $
+# $LastChangedDate: 2007-10-23 19:52:51 +0100 (Tue, 23 Oct 2007) $
+#             $Rev: 21 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -72,50 +72,50 @@ class WikiNotificationWebModule(Component):
 
     def process_request(self, req):
         if 'email' not in req.session:
-            req.hdf['notification.error'] = True
-            req.hdf['settings.url'] = req.href.settings()
-            return 'notification.cs', None
+            data = { 'notification' : {'error':True},
+                    'prefs': {'url':req.href.prefs() }}
+            return 'notification.html', data, None
+
+        notification = { 'wikiurl':req.href.wiki(),'my_not_url':req.href.notification(), }
         try:
-            req.hdf['notification.redirect_time'] = \
-                    req.session['watched_pages.redirect_time']
+            notification['redirect_time'] = req.session['watched_pages.redirect_time']
         except KeyError:
-            req.hdf['notification.redirect_time'] = self.redirect_time
+            notification['redirect_time'] = self.redirect_time
+
         wikipage = req.args.get('notification.wikipage', False)
         watched = self._get_watched_pages(req)
         if watched == ['']:
             watched = []
-        self.log.debug('WATCHED PAGES: %s', watched)
-        req.hdf['notification.wikiurl'] = req.href.wiki()
-        req.hdf['notification.my_not_url'] = req.href.notification()
+        # self.log.debug('WATCHED PAGES: %s', watched)
         if wikipage:
             if wikipage in watched:
-                req.hdf['notification.action'] = 'unwatch'
+                notification['action']='unwatch'
                 self._unwatch_page(req, wikipage)
             else:
                 self._watch_page(req, wikipage)
-                req.hdf['notification.action'] = 'watch'
-            req.hdf['notification.wikipage'] = wikipage
-            req.hdf['notification.redir'] = req.abs_href.wiki(wikipage)
-            req.hdf['notification.showlist'] = False
+                notification['action']='watch'
+            notification['wikipage']= wikipage
+            notification['redir']= req.abs_href.wiki(wikipage)
+            notification['showlist']= False
+            notification['removelist']= [wikipage]
         else:
             if req.method == 'POST' and req.args.get('remove'):
                 sel = req.args.get('sel')
                 sel = isinstance(sel, list) and sel or [sel]
                 for wikipage in sel:
                     self._unwatch_page(req, wikipage)
-                req.hdf['notification.redir'] = req.abs_href.notification()
-                req.hdf['notification.removelist'] = sel
+                notification['redir']= req.abs_href.notification()
+                notification['removelist']= sel
             elif req.method == 'POST' and req.args.get('update'):
-                req.hdf['notification.redirect_time'] = \
-                        req.session['watched_pages.redirect_time'] = \
-                        req.args.get('redirect_time')
-                req.hdf['notification.showlist'] = True
-                req.hdf['notification.list'] = watched
+                notification['redirect_time'] = req.session['watched_pages.redirect_time'] = \
+                    req.args.get('redirect_time')
+                notification['showlist']= True
+                notification['list']= watched
             else:
-                req.hdf['notification.showlist'] = True
-                req.hdf['notification.list'] = watched
+                notification['showlist']= True
+                notification['list']= watched
 
-        return 'notification.cs', None
+        return 'notification.html', {'notification':notification}, None
 
     # Internal methods
     def _get_watched_pages(self, req):

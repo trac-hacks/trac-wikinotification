@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 19 2007-10-23 17:45:04Z s0undt3ch $
+# $Id: notification.py 21 2007-10-23 18:52:51Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2007-10-23 18:45:04 +0100 (Tue, 23 Oct 2007) $
-#             $Rev: 19 $
+# $LastChangedDate: 2007-10-23 19:52:51 +0100 (Tue, 23 Oct 2007) $
+#             $Rev: 21 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -51,12 +51,12 @@ class WikiNotificationSystem(Component):
 
     redirect_time = Option(
         'wiki-notification', 'redirect_time', 5,
-        """The default secconds a redirect should take when
+        """The default seconds a redirect should take when
         watching/un-watching a wiki page""")
 
 
 class WikiNotifyEmail(NotifyEmail):
-    template_name = "notification_email.cs"
+    template_name = "notification_email.html"
     from_email = 'trac+wiki@localhost'
     COLS = 75
     newwiki = False
@@ -75,25 +75,25 @@ class WikiNotifyEmail(NotifyEmail):
         if action == "added":
             self.newwiki = True
 
-        self.hdf.set_unescaped('name', page.name)
-        self.hdf.set_unescaped('text', page.text)
-        self.hdf.set_unescaped('version', version)
-        self.hdf.set_unescaped('author', author)
-        self.hdf.set_unescaped('comment', comment)
-        self.hdf.set_unescaped('ip', ipnr)
-        self.hdf.set_unescaped('action', action)
-        self.hdf.set_unescaped('link', self.env.abs_href.wiki(page.name))
-        self.hdf.set_unescaped('linkdiff', "%s?action=diff&version=%i" % \
+        self.data['name']= page.name
+        self.data['text']= page.text
+        self.data['version']= version
+        self.data['author']= author
+        self.data['comment']= comment
+        self.data['ip']= ipnr
+        self.data['action']= action
+        self.data['link']= self.env.abs_href.wiki(page.name)
+        self.data['linkdiff']= "%s?action=diff&version=%i" % \
                                (self.env.abs_href.wiki(page.name),
-                                page.version))
+                                page.version)
         if page.version > 0 and action == 'modified':
             diff = diff_header % {'name': self.page.name,
                                   'version': self.page.version,
                                   'oldversion': self.page.version -1
                                  }
             oldpage = WikiPage(self.env, page.name, page.version - 1)
-            self.hdf.set_unescaped("oldversion", oldpage.version)
-            self.hdf.set_unescaped("oldtext", oldpage.text)
+            self.data["oldversion"]= oldpage.version
+            self.data["oldtext"]= oldpage.text
             for line in unified_diff(oldpage.text.splitlines(),
                                      page.text.splitlines(), context=3):
                 diff += "%s\n" % line
@@ -108,7 +108,7 @@ class WikiNotifyEmail(NotifyEmail):
     def get_message_id(self, rcpt):
         """Generate a predictable, but sufficiently unique message ID."""
         s = '%s.%s.%d.%s' % (self.config.get('project', 'url'),
-                               self.page.name, self.page.time,
+                               self.page.name, self.page.version,
                                rcpt.encode('ascii', 'ignore'))
         dig = md5.new(s).hexdigest()
         host = self.from_email[self.from_email.find('@') + 1:]
@@ -142,7 +142,8 @@ class WikiNotifyEmail(NotifyEmail):
         from email.MIMEMultipart import MIMEMultipart
         from email.Utils import formatdate, formataddr
         from trac import __version__
-        body = self.hdf.render(self.template_name)
+        stream = self.template.generate(**self.data)
+        body = stream.render('text')
         projname = self.config.get('project', 'name')
         public_cc = self.config['wiki-notification'].get('smtp_public_cc')
 

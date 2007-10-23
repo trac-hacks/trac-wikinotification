@@ -1,0 +1,33 @@
+#if action == 'added'
+Added page "${name}" by ${author} from ${ip}*
+Page URL: <${link}>
+Comment: ${comment}
+Content:
+
+${text}
+#end
+
+#if action == 'modified'
+Changed page "${name}" by ${author} from ${ip}*
+Page URL: <${link}>
+Diff URL: <${linkdiff}>
+Revision ${version} 
+Comment: ${comment}
+
+Changes on attached ${name.diff} file.
+#end
+
+#if action == 'deleted'
+Deleted page "${name}" by ${author} from ${ip}*
+#end
+
+#if action == 'deleted_version'
+Page URL: <${link}>
+Deleted version "${version}" of page "${name}" by  ${author} from ${ip}*
+#end
+
+* The IP shown here might not mean anything if the user is behind a proxy.
+
+-- 
+${project.name} <${project.url}>
+${project.descr}

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-# $Id: setup.py 15 2006-10-02 23:37:04Z s0undt3ch $
+# $Id: setup.py 21 2007-10-23 18:52:51Z s0undt3ch $
 
 from setuptools import setup, find_packages
 
 PACKAGE = 'TracWikiNotification'
-VERSION = '0.1.0rc4'
+VERSION = '0.1.1'
 AUTHOR = 'Pedro Algarvio'
 AUTHOR_EMAIL = 'ufs@ufsoft.org'
 SUMMARY = "Trac Plugin to allow email notification of changes on wiki pages"
@@ -86,7 +86,7 @@ setup(name=PACKAGE,
       packages=find_packages(),
       package_data={
           'WikiNotification': [
-              'templates/*.cs',
+              'templates/*.html',
           ]
       },
       entry_points = {
