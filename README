@@ -27,7 +27,7 @@ These are the options available to include on your *trac.ini* under *wiki-notifi
 =====================  ====================  ================================
  **Config Setting**     **Default Value**     **Explanation**
 ---------------------  --------------------  --------------------------------
-*redirect_time*        5 (in seconds)       The default seconds a redirect should take when
+*redirect_time*        5 (in seconds)        The default seconds a redirect should take when
                                              watching/un-watching a wiki page.
                                              This value is also definable per user, ie, user
                                              is able to configure this, of course for himself.

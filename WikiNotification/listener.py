@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: listener.py 10 2006-09-30 06:09:43Z s0undt3ch $
+# $Id: listener.py 19 2007-10-23 17:45:04Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/listener.py $
-# $LastChangedDate: 2006-09-30 07:09:43 +0100 (Sat, 30 Sep 2006) $
-#             $Rev: 10 $
+# $LastChangedDate: 2007-10-23 18:45:04 +0100 (Tue, 23 Oct 2007) $
+#             $Rev: 19 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -37,8 +37,7 @@ class WikiChangeListener(Component):
         wne = WikiNotifyEmail(page.env)
         wne.notify("added", page, version, time, comment, author, ipnr)
 
-    def wiki_page_changed(self, page, version, t, comment, author, ipnr):
-        time = t
+    def wiki_page_changed(self, page, version, time, comment, author, ipnr):
         wne = WikiNotifyEmail(page.env)
         wne.notify("modified", page, version, time, comment, author, ipnr)
 

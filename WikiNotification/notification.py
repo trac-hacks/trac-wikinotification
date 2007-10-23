@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 15 2006-10-02 23:37:04Z s0undt3ch $
+# $Id: notification.py 19 2007-10-23 17:45:04Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2006-10-03 00:37:04 +0100 (Tue, 03 Oct 2006) $
-#             $Rev: 15 $
+# $LastChangedDate: 2007-10-23 18:45:04 +0100 (Tue, 23 Oct 2007) $
+#             $Rev: 19 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -200,8 +200,9 @@ class WikiNotifyEmail(NotifyEmail):
         (accaddrs, recipients) = remove_dup(accaddrs, recipients)
         (bccaddrs, recipients) = remove_dup(bccaddrs, recipients)
 
-        # if there is not valid recipient, leave immediately
+        # if there is no valid recipient, leave immediately
         if len(recipients) < 1:
+            self.env.log.debug("0 recipients, exiting")
             return
 
         pcc = accaddrs
@@ -231,6 +232,7 @@ class WikiNotifyEmail(NotifyEmail):
         # The text Message
         msg = MIMEText(body, 'plain')
         msg.add_header('Content-Disposition', 'inline', filename="message")
+        # Re-Setting Content Transfer Encoding
         del msg['Content-Transfer-Encoding']
         msg.set_charset(self._charset)
         mail.attach(msg)
