@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# $Id: setup.py 21 2007-10-23 18:52:51Z s0undt3ch $
+# $Id: setup.py 22 2007-10-24 18:29:42Z s0undt3ch $
 
 from setuptools import setup, find_packages
 
@@ -81,8 +81,8 @@ setup(name=PACKAGE,
       description=SUMMARY,
       long_description=DESCRIPTION,
       license=LICENSE,
-      platforms="OS Independent - Anywhere Python and Trac >=0.10 is known to run.",
-      install_requires = ['TracCtxtnavAdd'],
+      platforms="OS Independent - Anywhere Python and Trac >=0.11 is known to run.",
+	  install_requires = ['Trac>=0.11dev-r6079', 'Genshi>=0.5dev-r766'],
       packages=find_packages(),
       package_data={
           'WikiNotification': [

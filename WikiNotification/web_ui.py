@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: web_ui.py 21 2007-10-23 18:52:51Z s0undt3ch $
+# $Id: web_ui.py 22 2007-10-24 18:29:42Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/web_ui.py $
-# $LastChangedDate: 2007-10-23 19:52:51 +0100 (Tue, 23 Oct 2007) $
-#             $Rev: 21 $
+# $LastChangedDate: 2007-10-24 19:29:42 +0100 (Wed, 24 Oct 2007) $
+#             $Rev: 22 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -15,18 +15,19 @@
 
 import re
 from trac.core import *
-from trac.util.html import html, Markup
 from trac.web.chrome import INavigationContributor, ITemplateProvider
 from trac.web import HTTPNotFound, IRequestHandler
+from trac.web.api import ITemplateStreamFilter
 from trac.config import Option
 
-from ctxtnavadd.api import ICtxtnavAdder
 from pkg_resources import resource_filename
+from genshi.builder import tag
+from genshi.filters.transform import Transformer
 
 class WikiNotificationWebModule(Component):
 
     implements(INavigationContributor, IRequestHandler, ITemplateProvider,
-               ICtxtnavAdder)
+               ITemplateStreamFilter)
 
     redirect_time = Option('wiki-notification', 'redirect_time', default=5)
 
@@ -45,20 +46,24 @@ class WikiNotificationWebModule(Component):
     def get_navigation_items(self, req):
         from trac.web.chrome import add_script
         yield('metanav', 'notification',
-              html.A('My Notifications', href=req.href.notification()))
+              tag.A('My Notifications', title="Wiki Pages Change Notifications",
+				    href=req.href.notification()))
 
-    # ICtxtnavAdder methods
-    def match_ctxtnav_add(self, req):
-        return len(req.path_info) <= 1 or req.path_info == '/' or \
-                req.path_info.startswith('/wiki')
 
-    def get_ctxtnav_adds(self, req):
-        page = req.path_info[6:] or 'WikiStart'
+    # ITemplateStreamFilter method
+    def filter_stream(self, req, method, filename, stream, data):
+        #self.log.debug('ITemplateStreamFilter method')
+        if filename != 'wiki_view.html':
+            #self.log.debug('filter stream not matching "wiki_view.html"')
+            return stream
+        page = page = req.path_info[6:] or 'WikiStart'
         watched = self._get_watched_pages(req)
         if page in watched:
-            yield (req.href.notification(page), 'Un-Watch Page')
+            li_item = tag.li(tag.a('Un-Watch Page', title='Un-Watch Page', href=req.href.notification(page)))
         else:
-            yield (req.href.notification(page), 'Watch Page')
+            li_item = tag.li(tag.a('Watch Page', title='Watch Page', href=req.href.notification(page)))
+        #self.log.debug('Transforming output...')
+        return stream | Transformer('//div[@id="ctxtnav"]/ul/li[1]]').before(li_item)
 
 
     # IRequestHandler methods
