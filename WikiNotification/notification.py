@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 21 2007-10-23 18:52:51Z s0undt3ch $
+# $Id: notification.py 23 2007-10-25 16:32:10Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2007-10-23 19:52:51 +0100 (Tue, 23 Oct 2007) $
-#             $Rev: 21 $
+# $LastChangedDate: 2007-10-25 17:32:10 +0100 (Thu, 25 Oct 2007) $
+#             $Rev: 23 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -239,7 +239,7 @@ class WikiNotifyEmail(NotifyEmail):
         mail.attach(msg)
         try:
             # The Diff Attachment
-            attach = MIMEText(self.wikidiff, 'x-patch')
+            attach = MIMEText(self.wikidiff.encode('utf-8'), 'x-patch')
             attach.add_header('Content-Disposition', 'inline',
                               filename=self.page.name + '.diff')
             del attach['Content-Transfer-Encoding']
