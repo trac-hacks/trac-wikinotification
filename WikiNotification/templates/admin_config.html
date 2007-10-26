@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:py="http://genshi.edgewall.org/"
+    xmlns:xi="http://www.w3.org/2001/XInclude">
+<xi:include href="admin.html" />
+<head>
+  <title>Notifications</title>
+</head>
+<body>
+  <h2>Wiki Notification Settings</h2>
+  <fieldset py:if="wnoptions.errors" style="border-color: red;">
+  <legend style="color: red;">Extra Configuration Warnings</legend>
+  <span py:for="key, val in wnoptions.errors.iteritems()">
+  <b>$key:</b> $val<br/>
+  </span>
+  <p class="help">
+    These are errors that need to be fixed so that the email notifications are
+    complete and correctly populated.
+  </p>
+  </fieldset>
+  <form class="mod" id="modwikinot" method="post">
+    <fieldset>
+    <legend>Redirection Time</legend>
+    <label for="redirect_time">Time:</label>
+      <input type="text" id="redirect_time" name="redirect_time"
+             value="${wnoptions.redirect_time.value or wnoptions.redirect_time.default}"/>
+      <p class="help">$wnoptions.redirect_time.__doc__</p>
+    </fieldset>
+
+    <fieldset>
+    <legend>From Email Address</legend>
+    <label for="smtp_from">From:</label>
+      <input type="text" id="smtp_from" name="smtp_from"
+             value="${ wnoptions.smtp_from.value or wnoptions.smtp_from.default}"/>
+      <p class="help">$wnoptions.smtp_from.__doc__</p>
+    </fieldset>
+
+    <fieldset>
+    <legend>BCC Email Address(es)</legend>
+      <label for="smtp_always_bcc">BCC Adresses:</label><br/>
+      <textarea cols="60" rows="2" id="smtp_always_bcc"
+                name="smtp_always_bcc">${ ' '.join(
+        wnoptions.smtp_always_bcc.value or wnoptions.smtp_always_bcc.default
+      )}</textarea>
+      <p class="help">
+      <py:for each="line in wnoptions.smtp_always_bcc.__doc__.split('\n\n')">
+        $line<br/>
+      </py:for>
+      </p>
+    </fieldset>
+
+    <fieldset>
+    <legend>CC Email Address(es)</legend>
+      <label for="smtp_always_cc">CC Adresses:</label><br/>
+      <textarea cols="60" rows="2" id="smtp_always_cc"
+                name="smtp_always_cc">${ ' '.join(
+        wnoptions.smtp_always_cc.value or wnoptions.smtp_always_cc.default
+      )}</textarea>
+      <p class="help">
+      <py:for each="line in wnoptions.smtp_always_cc.__doc__.split('\n\n')">
+        $line<br/>
+      </py:for>
+      </p>
+    </fieldset>
+
+    <fieldset>
+    <legend>Publicly CC</legend>
+    <label for="use_public_cc">Public CC:</label>
+      <input type="text" id="use_public_cc" name="use_public_cc"
+             value="${ wnoptions.use_public_cc.value or wnoptions.use_public_cc.default }"/>
+      <p class="help">
+      <py:for each="line in wnoptions.use_public_cc.__doc__.split('\n\n')">
+        $line<br/>
+      </py:for>
+      </p>
+    </fieldset>
+    <div class="buttons">
+      <input type="submit" name="apply" value="Apply changes" />
+    </div>
+  </form>
+</body>
+</html>

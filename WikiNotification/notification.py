@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 23 2007-10-25 16:32:10Z s0undt3ch $
+# $Id: notification.py 24 2007-10-26 15:58:00Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2007-10-25 17:32:10 +0100 (Thu, 25 Oct 2007) $
-#             $Rev: 23 $
+# $LastChangedDate: 2007-10-26 16:58:00 +0100 (Fri, 26 Oct 2007) $
+#             $Rev: 24 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -34,20 +34,28 @@ class WikiNotificationSystem(Component):
 
     smtp_always_cc = Option(
         'wiki-notification', 'smtp_always_cc', '',
-        """Email address(es) to always send notifications to,
-        addresses can be see by all recipients (Cc:).""")
+        """Email address(es) to always send notifications to.
+
+        Addresses can be seen by all recipients (Cc:).
+
+        Seperate each address by a blank space.""")
 
     smtp_always_bcc = Option(
         'wiki-notification', 'smtp_always_bcc', '',
-        """Email address(es) to always send notifications to,
-        addresses do not appear publicly (Bcc:).""")
+        """Email address(es) to always send notifications to.
+
+        Addresses do not appear publicly (Bcc:).
+
+        Seperate each address by a blank space.""")
 
     use_public_cc = BoolOption(
         'wiki-notification', 'use_public_cc', 'false',
         """Recipients can see email addresses of other CC'ed recipients.
 
         If this option is disabled(the default),
-        recipients are put on BCC.""")
+        recipients are put on BCC.
+
+        (values: 1, on, enabled, true or 0, off, disabled, false)""")
 
     redirect_time = Option(
         'wiki-notification', 'redirect_time', 5,

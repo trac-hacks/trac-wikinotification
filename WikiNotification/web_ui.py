@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: web_ui.py 22 2007-10-24 18:29:42Z s0undt3ch $
+# $Id: web_ui.py 24 2007-10-26 15:58:00Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/web_ui.py $
-# $LastChangedDate: 2007-10-24 19:29:42 +0100 (Wed, 24 Oct 2007) $
-#             $Rev: 22 $
+# $LastChangedDate: 2007-10-26 16:58:00 +0100 (Fri, 26 Oct 2007) $
+#             $Rev: 24 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -44,10 +44,11 @@ class WikiNotificationWebModule(Component):
         return 'notification'
 
     def get_navigation_items(self, req):
-        from trac.web.chrome import add_script
-        yield('metanav', 'notification',
-              tag.A('My Notifications', title="Wiki Pages Change Notifications",
-				    href=req.href.notification()))
+        if self.config.getbool('notification', 'smtp_enabled', False):
+            yield('metanav', 'notification',
+                  tag.A('My Notifications',
+                        title="Wiki Pages Change Notifications",
+                        href=req.href.notification()))
 
 
     # ITemplateStreamFilter method
@@ -55,6 +56,8 @@ class WikiNotificationWebModule(Component):
         #self.log.debug('ITemplateStreamFilter method')
         if filename != 'wiki_view.html':
             #self.log.debug('filter stream not matching "wiki_view.html"')
+            return stream
+        if not self.config.getbool('notification', 'smtp_enabled', False):
             return stream
         page = page = req.path_info[6:] or 'WikiStart'
         watched = self._get_watched_pages(req)

@@ -11,7 +11,7 @@ ${text}
 Changed page "${name}" by ${author} from ${ip}*
 Page URL: <${link}>
 Diff URL: <${linkdiff}>
-Revision ${version} 
+Revision ${version}
 Comment: ${comment}
 
 Changes on attached ${name.diff} file.
@@ -26,8 +26,15 @@ Page URL: <${link}>
 Deleted version "${version}" of page "${name}" by  ${author} from ${ip}*
 #end
 
-* The IP shown here might not mean anything if the user is behind a proxy.
+* The IP shown here might not mean anything if the user or the server is
+behind a proxy.
 
--- 
+--
 ${project.name} <${project.url}>
 ${project.descr}
+
+This is an automated message. Someone at ${project.url} added your email
+address to be notified of changes on ${name}. If it was not you, please
+report to ${project.admin}.
+
+
