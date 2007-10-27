@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: admin.py 24 2007-10-26 15:58:00Z s0undt3ch $
+# $Id: admin.py 25 2007-10-27 12:50:46Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/admin.py $
-# $LastChangedDate: 2007-10-26 16:58:00 +0100 (Fri, 26 Oct 2007) $
-#             $Rev: 24 $
+# $LastChangedDate: 2007-10-27 13:50:46 +0100 (Sat, 27 Oct 2007) $
+#             $Rev: 25 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2007 Ufsoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -31,14 +31,14 @@ class WikiNotificationAdminPanel(Component):
         if req.perm.has_permission('TRAC_ADMIN'):
             yield ('wikinotification', 'Wiki Notifications',
                    'config', 'Configuration')
-#            yield ('wikinotification', 'Wiki Notifications',
-#                   'users', 'User Notifications')
+            yield ('wikinotification', 'Wiki Notifications',
+                   'users', 'User Notifications')
 
     def render_admin_panel(self, req, cat, page, path_info):
         if page == 'config':
             return self._do_config(req, cat, page, path_info)
-#        elif page == 'users':
-#            return self._do_users(req)
+        elif page == 'users':
+            return self._do_users(req, cat, page, path_info)
 
     # ITemplateProvider
     def get_htdocs_dirs(self):
@@ -100,3 +100,19 @@ class WikiNotificationAdminPanel(Component):
             self.config.save()
             req.redirect(req.href.admin(cat, page))
         return 'admin_config.html', {'wnoptions': self.options}
+
+    def _do_users(self, req, cat, page, path_info):
+        sql = "SELECT sid,authenticated,value " + \
+              "FROM session_attribute WHERE name = 'watched_pages';"
+        db = self.env.get_db_cnx()
+        cursor = db.cursor()
+        notified_users = []
+        for user, authenticated, pages in cursor.execute(sql).fetchall():
+            attrs = {}
+            attrs['sid'] = user
+            attrs['authenticated'] = authenticated
+            attrs['pages'] = pages.strip(',').split(',')
+            notified_users.append(attrs)
+
+        return 'admin_user_notifications.html', {'wpages': notified_users,
+                                                 'wikiurl':req.href.wiki()}

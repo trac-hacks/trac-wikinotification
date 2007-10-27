@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: web_ui.py 24 2007-10-26 15:58:00Z s0undt3ch $
+# $Id: web_ui.py 25 2007-10-27 12:50:46Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/web_ui.py $
-# $LastChangedDate: 2007-10-26 16:58:00 +0100 (Fri, 26 Oct 2007) $
-#             $Rev: 24 $
+# $LastChangedDate: 2007-10-27 13:50:46 +0100 (Sat, 27 Oct 2007) $
+#             $Rev: 25 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -84,7 +84,8 @@ class WikiNotificationWebModule(Component):
                     'prefs': {'url':req.href.prefs() }}
             return 'notification.html', data, None
 
-        notification = { 'wikiurl':req.href.wiki(),'my_not_url':req.href.notification(), }
+        notification = {'wikiurl':req.href.wiki(),
+                        'my_not_url':req.href.notification()}
         try:
             notification['redirect_time'] = req.session['watched_pages.redirect_time']
         except KeyError:
