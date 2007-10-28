@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: web_ui.py 25 2007-10-27 12:50:46Z s0undt3ch $
+# $Id: web_ui.py 27 2007-10-28 11:30:39Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/web_ui.py $
-# $LastChangedDate: 2007-10-27 13:50:46 +0100 (Sat, 27 Oct 2007) $
-#             $Rev: 25 $
+# $LastChangedDate: 2007-10-28 11:30:39 +0000 (Sun, 28 Oct 2007) $
+#             $Rev: 27 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -62,11 +62,15 @@ class WikiNotificationWebModule(Component):
         page = page = req.path_info[6:] or 'WikiStart'
         watched = self._get_watched_pages(req)
         if page in watched:
-            li_item = tag.li(tag.a('Un-Watch Page', title='Un-Watch Page', href=req.href.notification(page)))
+            link = tag.a('Un-Watch Page', title='Un-Watch Page',
+                            href=req.href.notification(page))
         else:
-            li_item = tag.li(tag.a('Watch Page', title='Watch Page', href=req.href.notification(page)))
+            link = tag.a('Watch Page', title='Watch Page',
+                            href=req.href.notification(page))
         #self.log.debug('Transforming output...')
-        return stream | Transformer('//div[@id="ctxtnav"]/ul/li[1]]').before(li_item)
+        return stream | Transformer(
+            '//div[@id="ctxtnav"]/ul/li[@class="last"]'
+        ).attr('class',None).after(tag.li(link,class_="last"))
 
 
     # IRequestHandler methods
