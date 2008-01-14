@@ -2,12 +2,12 @@
  Trac Wiki Notification Plugin
 ==============================
 
-Trac_ WikiNotification_ is a pluggin that allows users(even anonymous,
+Trac WikiNotification_ is a plugin that allows users(even anonymous,
 as long as email is set) to select the wiki pages that they wish to
 be notified(by email) when a change occurs on it.
 
 **Note**: The user updating the wiki page won't be notified about his own
-          changes.
+changes.
 
 You can find more info on the trac WikiNotification_ site where bugs and new
 feature requests should go to.
@@ -63,8 +63,8 @@ following example::
    [wiki-notification]
    redirect_time = 5
    smtp_always_bcc =
-   smtp_always_cc = 
-   smtp_from = trac.wiki@localhost 
+   smtp_always_cc =
+   smtp_from = trac.wiki@localhost
    use_public_cc = false
 
 
@@ -93,29 +93,32 @@ To install this development version type::
 Aditional Notes(from user input)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1.  ``easy_install`` is run from the command line (on Linux) not from within
-Python.
-
-2.  After installing any plugin for Trac you'll need to restart Apache to see
-it (not all changes to ``trac.ini`` require a restart but adding a plugin does).
-
-3.  Make sure to add the new plugin to ``trac.ini``::
-
-   [components]
-   wikinotification.* = enabled
+* ``easy_install`` is run from the command line (on Linux) not from within
+  Python.
 
 
-4.  Also should be noted that the trac.ini configuration for the wiki
-notification should look something like::
+* After installing any plugin for Trac you'll need to restart Apache to see
+  it (not all changes to trac.ini require a restart but adding a plugin does).
 
-   [wiki-notification]
-   smtp_always_cc = someone@somedomain
-   smtp_from = trac.wiki@localhost
 
-5. **Another note**: a user will never get a notice of his/her own wiki
-modification (which is a little tricky when testing the plugin :))
+* Make sure to add the new plugin to ``trac.ini`` ::
+
+    [components]
+    wikinotification.* = enabled    
+
+
+* Also should be noted that the ``trac.ini`` configuration for the wiki
+  notification should look something like::
+
+    [wiki-notification]
+    smtp_always_cc = someone@somedomain
+    smtp_from = trac.wiki@localhost
+
+
+* **Another note**: a user will never get a notice of his/her own wiki
+  modification (which is a little tricky when testing the plugin :))
+
 
 .. _read this: http://wikinotification.ufsoft.org/browser/trunk/README
 .. _Easy Install: http://peak.telecommunity.com/DevCenter/EasyInstall
 .. _WikiNotification: http://wikinotification.ufsoft.org
-.. _Trac:: http://trac.edgewall.org
