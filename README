@@ -93,19 +93,19 @@ To install this development version type::
 Aditional Notes(from user input)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. ``easy_install`` is run from the command line (on Linux) not from within
+1.  ``easy_install`` is run from the command line (on Linux) not from within
 Python.
 
-2. After installing any plugin for Trac you'll need to restart Apache to see
+2.  After installing any plugin for Trac you'll need to restart Apache to see
 it (not all changes to ``trac.ini`` require a restart but adding a plugin does).
 
-3. Make sure to add the new plugin to ``trac.ini``::
+3.  Make sure to add the new plugin to ``trac.ini``::
 
    [components]
    wikinotification.* = enabled
 
 
-4. Also should be noted that the trac.ini configuration for the wiki
+4.  Also should be noted that the trac.ini configuration for the wiki
 notification should look something like::
 
    [wiki-notification]
