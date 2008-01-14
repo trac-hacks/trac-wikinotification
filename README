@@ -9,7 +9,7 @@ be notified(by email) when a change occurs on it.
 **Note**: The user updating the wiki page won't be notified about his own
           changes.
 
-You can find more info on the Trac WikiNotification_ site where bugs and new
+You can find more info on the trac WikiNotification_ site where bugs and new
 feature requests should go to.
 
 Enabling the Plugin
@@ -117,3 +117,5 @@ modification (which is a little tricky when testing the plugin :))
 
 .. _read this: http://wikinotification.ufsoft.org/browser/trunk/README
 .. _Easy Install: http://peak.telecommunity.com/DevCenter/EasyInstall
+.. _WikiNotification: http://wikinotification.ufsoft.org
+.. _Trac:: http://trac.edgewall.org
