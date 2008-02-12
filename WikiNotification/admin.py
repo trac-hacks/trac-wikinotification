@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: admin.py 25 2007-10-27 12:50:46Z s0undt3ch $
+# $Id: admin.py 32 2008-02-12 02:29:11Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/admin.py $
-# $LastChangedDate: 2007-10-27 13:50:46 +0100 (Sat, 27 Oct 2007) $
-#             $Rev: 25 $
+# $LastChangedDate: 2008-02-12 02:29:11 +0000 (Tue, 12 Feb 2008) $
+#             $Rev: 32 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2007 Ufsoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -107,7 +107,12 @@ class WikiNotificationAdminPanel(Component):
         db = self.env.get_db_cnx()
         cursor = db.cursor()
         notified_users = []
-        for user, authenticated, pages in cursor.execute(sql).fetchall():
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        if not results:
+            return 'admin_user_notifications.html', {'wpages': notified_users,
+                                                     'wikiurl':req.href.wiki()}
+        for user, authenticated, pages in results:
             attrs = {}
             attrs['sid'] = user
             attrs['authenticated'] = authenticated
