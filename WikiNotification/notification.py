@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 24 2007-10-26 15:58:00Z s0undt3ch $
+# $Id: notification.py 33 2008-02-28 23:43:46Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2007-10-26 16:58:00 +0100 (Fri, 26 Oct 2007) $
-#             $Rev: 24 $
+# $LastChangedDate: 2008-02-28 23:43:46 +0000 (Thu, 28 Feb 2008) $
+#             $Rev: 33 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -104,7 +104,7 @@ class WikiNotifyEmail(NotifyEmail):
             self.data["oldtext"]= oldpage.text
             for line in unified_diff(oldpage.text.splitlines(),
                                      page.text.splitlines(), context=3):
-                diff += "%s\n" % line
+                diff += "%s\r\n" % line
                 self.wikidiff = diff
 
         projname = self.config.get('project', 'name')
