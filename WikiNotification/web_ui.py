@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: web_ui.py 27 2007-10-28 11:30:39Z s0undt3ch $
+# $Id: web_ui.py 34 2008-02-28 23:54:50Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/web_ui.py $
-# $LastChangedDate: 2007-10-28 11:30:39 +0000 (Sun, 28 Oct 2007) $
-#             $Rev: 27 $
+# $LastChangedDate: 2008-02-28 23:54:50 +0000 (Thu, 28 Feb 2008) $
+#             $Rev: 34 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -108,7 +108,7 @@ class WikiNotificationWebModule(Component):
                 self._watch_page(req, wikipage)
                 notification['action']='watch'
             notification['wikipage']= wikipage
-            notification['redir']= req.abs_href.wiki(wikipage)
+            notification['redir']= req.href.wiki(wikipage)
             notification['showlist']= False
             notification['removelist']= [wikipage]
         else:
@@ -117,11 +117,12 @@ class WikiNotificationWebModule(Component):
                 sel = isinstance(sel, list) and sel or [sel]
                 for wikipage in sel:
                     self._unwatch_page(req, wikipage)
-                notification['redir']= req.abs_href.notification()
+                notification['redir']= req.href.notification()
                 notification['removelist']= sel
             elif req.method == 'POST' and req.args.get('update'):
-                notification['redirect_time'] = req.session['watched_pages.redirect_time'] = \
-                    req.args.get('redirect_time')
+                notification['redirect_time'] = \
+                    req.session['watched_pages.redirect_time'] = \
+                        req.args.get('redirect_time')
                 notification['showlist']= True
                 notification['list']= watched
             else:
