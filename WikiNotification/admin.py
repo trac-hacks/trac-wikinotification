@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: admin.py 36 2008-03-04 00:14:07Z s0undt3ch $
+# $Id: admin.py 39 2008-03-04 15:15:49Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/admin.py $
-# $LastChangedDate: 2008-03-04 00:14:07 +0000 (Tue, 04 Mar 2008) $
-#             $Rev: 36 $
+# $LastChangedDate: 2008-03-04 15:15:49 +0000 (Tue, 04 Mar 2008) $
+#             $Rev: 39 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2007 Ufsoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -101,7 +101,6 @@ class WikiNotificationAdminPanel(Component):
                            'smtp_from', 'use_public_cc', 'banned_addresses',
                            'attach_diff'):
                 if option in ('use_public_cc', 'attach_diff'):
-                    print 12, req.args.get(option)
                     self.config.set('wiki-notification', option,
                                     (req.args.get(option) == 'yes') and \
                                     'true' or 'false')

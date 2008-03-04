@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-# $Id: setup.py 35 2008-03-03 17:08:32Z s0undt3ch $
+# $Id: setup.py 39 2008-03-04 15:15:49Z s0undt3ch $
 
 import re
 from setuptools import setup, find_packages
 
 PACKAGE = 'TracWikiNotification'
-VERSION = '0.1.1'
+VERSION = '0.2.0'
 AUTHOR = 'Pedro Algarvio'
 AUTHOR_EMAIL = 'ufs@ufsoft.org'
 SUMMARY = "Trac Plugin to allow email notification of changes on wiki pages"

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: web_ui.py 34 2008-02-28 23:54:50Z s0undt3ch $
+# $Id: web_ui.py 39 2008-03-04 15:15:49Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/web_ui.py $
-# $LastChangedDate: 2008-02-28 23:54:50 +0000 (Thu, 28 Feb 2008) $
-#             $Rev: 34 $
+# $LastChangedDate: 2008-03-04 15:15:49 +0000 (Tue, 04 Mar 2008) $
+#             $Rev: 39 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -91,15 +91,17 @@ class WikiNotificationWebModule(Component):
         notification = {'wikiurl':req.href.wiki(),
                         'my_not_url':req.href.notification()}
         try:
-            notification['redirect_time'] = req.session['watched_pages.redirect_time']
+            notification['redirect_time'] = \
+                req.session['watched_pages.redirect_time']
         except KeyError:
             notification['redirect_time'] = self.redirect_time
 
         wikipage = req.args.get('notification.wikipage', False)
         watched = self._get_watched_pages(req)
-        if watched == ['']:
+#        self.log.debug('WATCHED PAGES XX: %s', watched)
+        if watched == ([''] or [u'']):
             watched = []
-        # self.log.debug('WATCHED PAGES: %s', watched)
+#        self.log.debug('WATCHED PAGES YY: %s', watched)
         if wikipage:
             if wikipage in watched:
                 notification['action']='unwatch'
@@ -144,8 +146,18 @@ class WikiNotificationWebModule(Component):
         watched = self._get_watched_pages(req)
         watched.append(page)
         req.session['watched_pages'] = ','+','.join(watched)+','
+        self._cleanup_session(req)
 
     def _unwatch_page(self, req, page):
         watched = self._get_watched_pages(req)
         watched.remove(page)
         req.session['watched_pages'] = ','+','.join(watched)+','
+        self._cleanup_session(req)
+
+    def _cleanup_session(self, req):
+        try:
+            if req.session['watched_pages'] == u',,':
+                del(req.session['watched_pages'])
+        except:
+            pass
+        req.session.save()
