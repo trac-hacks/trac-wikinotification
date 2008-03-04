@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 35 2008-03-03 17:08:32Z s0undt3ch $
+# $Id: notification.py 36 2008-03-04 00:14:07Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2008-03-03 17:08:32 +0000 (Mon, 03 Mar 2008) $
-#             $Rev: 35 $
+# $LastChangedDate: 2008-03-04 00:14:07 +0000 (Tue, 04 Mar 2008) $
+#             $Rev: 36 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -23,7 +23,7 @@ from trac.util.datefmt import to_timestamp
 from trac.wiki.model import WikiPage
 from trac.versioncontrol.diff import unified_diff
 from trac.notification import NotifyEmail
-from trac.config import Option, BoolOption
+from trac.config import Option, BoolOption, ListOption, IntOption
 
 from genshi.template.text import TextTemplate
 
@@ -45,24 +45,22 @@ class WikiNotificationSystem(Component):
 
         Defaults to project name.""")
 
-    smtp_always_cc = Option(
-        'wiki-notification', 'smtp_always_cc', '',
-        """Email address(es) to always send notifications to.
+    smtp_always_cc = ListOption(
+        'wiki-notification', 'smtp_always_cc', [],
+        doc="""Comma separated list of email address(es) to always send
+        notifications to.
 
-        Addresses can be seen by all recipients (Cc:).
+        Addresses can be seen by all recipients (Cc:).""")
 
-        Seperate each address by a blank space.""")
+    smtp_always_bcc = ListOption(
+        'wiki-notification', 'smtp_always_bcc', [],
+        doc="""Comma separated list of email address(es) to always send
+        notifications to.
 
-    smtp_always_bcc = Option(
-        'wiki-notification', 'smtp_always_bcc', '',
-        """Email address(es) to always send notifications to.
-
-        Addresses do not appear publicly (Bcc:).
-
-        Seperate each address by a blank space.""")
+        Addresses do not appear publicly (Bcc:).""")
 
     use_public_cc = BoolOption(
-        'wiki-notification', 'use_public_cc', 'false',
+        'wiki-notification', 'use_public_cc', False,
         """Recipients can see email addresses of other CC'ed recipients.
 
         If this option is disabled(the default),
@@ -71,10 +69,10 @@ class WikiNotificationSystem(Component):
         (values: 1, on, enabled, true or 0, off, disabled, false)""")
 
     attach_diff = BoolOption(
-        'wiki-notification', 'attach_diff', 'false',
+        'wiki-notification', 'attach_diff', False,
         """Send `diff`'s as an attachment instead of inline in email body.""")
 
-    redirect_time = Option(
+    redirect_time = IntOption(
         'wiki-notification', 'redirect_time', 5,
         """The default seconds a redirect should take when
         watching/un-watching a wiki page""")
@@ -83,6 +81,11 @@ class WikiNotificationSystem(Component):
         'wiki-notification', 'subject_template', '$prefix $page.name $action',
         "A Genshi text template snippet used to get the notification subject.")
 
+    banned_addresses = ListOption(
+        'wiki-notification', 'banned_addresses', [],
+        doc="""A comma separated list of email addresses that should never be
+        sent a notification email.""")
+
 
 class WikiNotifyEmail(NotifyEmail):
     template_name = "wiki_notification_email_template.txt"
@@ -90,9 +93,14 @@ class WikiNotifyEmail(NotifyEmail):
     COLS = 75
     newwiki = False
     wikidiff = None
+    blocked_addresses = []
 
     def __init__(self, env):
         NotifyEmail.__init__(self, env)
+
+        self.from_name = self.config.get('wiki-notification', 'from_name')
+        self.banned_addresses = self.config.getlist('wiki-notification',
+                                                    'bad_email_addresses')
 
     def notify(self, action, page,
                version=None,
@@ -103,8 +111,6 @@ class WikiNotifyEmail(NotifyEmail):
         self.page = page
         self.change_author = author
         self.time = time
-
-        self.from_name = self.config.get('wiki-notification', 'from_name')
 
         if action == "added":
             self.newwiki = True
@@ -204,25 +210,29 @@ class WikiNotifyEmail(NotifyEmail):
             """Remove duplicates"""
             tmp = []
             for rcpt in rcpts:
-                if not rcpt in all:
+                if rcpt in self.banned_addresses:
+                    self.blocked_addresses.append(rcpt)
+                elif not rcpt in all:
                     tmp.append(rcpt)
                     all.append(rcpt)
             return (tmp, all)
 
         toaddrs = build_addresses(torcpts)
         ccaddrs = build_addresses(ccrcpts)
-        accparam = self.config.get('wiki-notification', 'smtp_always_cc')
-        accaddrs = accparam and \
-                   build_addresses(accparam.replace(',', ' ').split()) or []
-        bccparam = self.config.get('wiki-notification', 'smtp_always_bcc')
-        bccaddrs = bccparam and \
-                   build_addresses(bccparam.replace(',', ' ').split()) or []
+        accparam = self.config.getlist('wiki-notification', 'smtp_always_cc')
+        accaddrs = accparam and build_addresses(accparam) or []
+        bccparam = self.config.getlist('wiki-notification', 'smtp_always_bcc')
+        bccaddrs = bccparam and build_addresses(bccparam) or []
 
         recipients = []
         (toaddrs, recipients) = remove_dup(toaddrs, recipients)
         (ccaddrs, recipients) = remove_dup(ccaddrs, recipients)
         (accaddrs, recipients) = remove_dup(accaddrs, recipients)
         (bccaddrs, recipients) = remove_dup(bccaddrs, recipients)
+
+        self.env.log.debug("Not notifying the following addresses: %s",
+                           ', '.join(["%s" % addr for addr in
+                                      self.blocked_addresses]))
 
         # if there is not valid recipient, leave immediately
         if len(recipients) < 1:

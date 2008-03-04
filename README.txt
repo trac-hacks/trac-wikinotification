@@ -40,12 +40,14 @@ These are the options available to include on your ``trac.ini`` under
                                                    this, of course for
                                                    himself.
 ---------------------  --------------------------  --------------------------
-*smtp_always_bcc*      *empty*                     Email address(es) to
+*smtp_always_bcc*      *empty*                     Comma separated list of
+                                                   email address(es) to
                                                    always send notifications
                                                    to, addresses do not
                                                    appear publicly (Bcc:).
 ---------------------  --------------------------  --------------------------
-*smtp_always_cc*       *empty*                     Email address(es) to
+*smtp_always_cc*       *empty*                     Comma separated list of
+                                                   email address(es) to
                                                    always send notifications
                                                    to, addresses can be seen
                                                    by all recipients (Cc:).
@@ -70,6 +72,10 @@ These are the options available to include on your ``trac.ini`` under
 *subject_template*     $prefix $page.name $action  A Genshi text template
                                                    snippet used to get the
                                                    notification subject.
+---------------------  --------------------------  --------------------------
+*banned_addresses*     *empty*                     Comma separated list of
+                                                   email addresses to never
+                                                   send notifications to.
 =====================  ==========================  ==========================
 
 If you want to override these settings then you can include it like the
@@ -79,13 +85,14 @@ following example:
 
    [wiki-notification]
    redirect_time = 5
-   smtp_always_bcc = someone@somedomain
+   smtp_always_bcc = someone@somedomain, another.one@somedomain
    smtp_always_cc = someone.else@somedomain
    smtp_from = trac.wiki@localhost
    from_name = Custom Name
    use_public_cc = false
    attach_diff = true
    subject_template = Foo $prefix $page.name $action
+   banned_addresses = banned.user1@somedomain, banned.user2@somedomain
 
 
 **Note**: For an up-to-date version of this info please `read this`_.

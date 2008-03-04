@@ -24,7 +24,8 @@
     <legend>Redirection Time</legend>
     <label for="redirect_time">Time:</label>
       <input type="text" id="redirect_time" name="redirect_time"
-             value="${wnoptions.redirect_time.value or wnoptions.redirect_time.default}"/>
+             value="${wnoptions.redirect_time.value or
+                      wnoptions.redirect_time.default}"/>
       <p class="help">$wnoptions.redirect_time.__doc__</p>
     </fieldset>
 
@@ -32,7 +33,8 @@
     <legend>From Email Address</legend>
     <label for="smtp_from">From:</label>
       <input type="text" id="smtp_from" name="smtp_from"
-             value="${ wnoptions.smtp_from.value or wnoptions.smtp_from.default}"/>
+             value="${ wnoptions.smtp_from.value or
+                       wnoptions.smtp_from.default}"/>
       <p class="help">$wnoptions.smtp_from.__doc__</p>
     </fieldset>
 
@@ -40,11 +42,11 @@
     <legend>BCC Email Address(es)</legend>
       <label for="smtp_always_bcc">BCC Adresses:</label><br/>
       <textarea cols="60" rows="2" id="smtp_always_bcc"
-                name="smtp_always_bcc">${ ' '.join(
+                name="smtp_always_bcc">${ ' ,'.join(
         wnoptions.smtp_always_bcc.value or wnoptions.smtp_always_bcc.default
       )}</textarea>
       <p class="help">
-      <py:for each="line in wnoptions.smtp_always_bcc.__doc__.split('\n\n')">
+      <py:for each="line in wnoptions.smtp_always_bcc.doc">
         $line<br/>
       </py:for>
       </p>
@@ -54,11 +56,25 @@
     <legend>CC Email Address(es)</legend>
       <label for="smtp_always_cc">CC Adresses:</label><br/>
       <textarea cols="60" rows="2" id="smtp_always_cc"
-                name="smtp_always_cc">${ ' '.join(
+                name="smtp_always_cc">${ ' ,'.join(
         wnoptions.smtp_always_cc.value or wnoptions.smtp_always_cc.default
       )}</textarea>
       <p class="help">
-      <py:for each="line in wnoptions.smtp_always_cc.__doc__.split('\n\n')">
+      <py:for each="line in wnoptions.smtp_always_cc.doc">
+        $line<br/>
+      </py:for>
+      </p>
+    </fieldset>
+
+    <fieldset>
+    <legend>Banned Email Address(es)</legend>
+      <label for="smtp_always_cc">Banned Addresses:</label><br/>
+      <textarea cols="60" rows="2" id="banned_addresses"
+                name="banned_addresses">${ ' ,'.join(
+        wnoptions.banned_addresses.value or wnoptions.banned_addresses.default
+      )}</textarea>
+      <p class="help">
+      <py:for each="line in wnoptions.banned_addresses.doc">
         $line<br/>
       </py:for>
       </p>
@@ -66,17 +82,24 @@
 
     <fieldset>
     <legend>Publicly CC</legend>
-    <label for="use_public_cc">Public CC:</label>
-      <input type="text" id="use_public_cc" name="use_public_cc"
-             value="${ wnoptions.use_public_cc.value or wnoptions.use_public_cc.default }"/>
+    <label for="use_public_cc">Publicly CC:</label>
+      <input type="checkbox" id="use_public_cc" name="use_public_cc"
+             value="yes" checked="${ wnoptions.use_public_cc.checked }"/>
       <p class="help">
-      <py:for each="line in wnoptions.use_public_cc.__doc__.split('\n\n')">
+      <py:for each="line in wnoptions.use_public_cc.doc">
         $line<br/>
       </py:for>
       </p>
     </fieldset>
+    <fieldset>
+    <legend>Attach Diff</legend>
+    <label for="attach_diff">Attach Diff:</label>
+      <input type="checkbox" id="attach_diff" name="attach_diff"
+             value="yes" checked="${ wnoptions.attach_diff.checked }"/>
+      <p class="help">$wnoptions.attach_diff.__doc__</p>
+    </fieldset>
     <div class="buttons">
-      <input type="submit" name="apply" value="Apply changes" />
+      <input type="submit" name="apply" value="Apply Changes" />
     </div>
   </form>
 </body>

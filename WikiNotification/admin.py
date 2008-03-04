@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: admin.py 32 2008-02-12 02:29:11Z s0undt3ch $
+# $Id: admin.py 36 2008-03-04 00:14:07Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/admin.py $
-# $LastChangedDate: 2008-02-12 02:29:11 +0000 (Tue, 12 Feb 2008) $
-#             $Rev: 32 $
+# $LastChangedDate: 2008-03-04 00:14:07 +0000 (Tue, 04 Mar 2008) $
+#             $Rev: 36 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2007 Ufsoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -16,7 +16,7 @@
 from trac.core import *
 from trac.web.chrome import ITemplateProvider
 from trac.admin import IAdminPanelProvider
-from trac.config import Option, _TRUE_VALUES
+from trac.config import Option
 from genshi.builder import tag
 from genshi.core import Markup
 
@@ -70,13 +70,20 @@ class WikiNotificationAdminPanel(Component):
         #return errors
 
     def _do_config(self, req, cat, page, path_info):
+
         for option in [option for option in Option.registry.values()
                        if option.section == 'wiki-notification']:
             value = ''
-            if option.name == 'use_public_cc':
+            if option.name in ('use_public_cc', 'attach_diff'):
                 value = self.config.getbool('wiki-notification', option.name,
                                             option.default)
-            elif option.name in ('smtp_always_bcc', 'smtp_always_cc'):
+                if value==True:
+                    option.checked = 'checked'
+                else:
+                    option.checked = None
+
+            elif option.name in ('smtp_always_bcc', 'smtp_always_cc',
+                                 'banned_addresses'):
                 value = self.config.getlist('wiki-notification', option.name,
                                             option.default)
             else:
@@ -84,19 +91,23 @@ class WikiNotificationAdminPanel(Component):
                                         option.default)
             if value:
                 option.value = value
+            option.doc = option.__doc__.split('\n\n')
             self.options[option.name] = option
 
         self._get_extra_config_errors()
 
         if req.method == 'POST':
             for option in ('redirect_time', 'smtp_always_bcc', 'smtp_always_cc',
-                           'smtp_from', 'use_public_cc'):
-                if option == 'use_public_cc':
+                           'smtp_from', 'use_public_cc', 'banned_addresses',
+                           'attach_diff'):
+                if option in ('use_public_cc', 'attach_diff'):
+                    print 12, req.args.get(option)
                     self.config.set('wiki-notification', option,
-                                    req.args.get(option) in _TRUE_VALUES)
+                                    (req.args.get(option) == 'yes') and \
+                                    'true' or 'false')
                 else:
                     self.config.set('wiki-notification', option,
-                                req.args.get(option))
+                                    req.args.get(option))
             self.config.save()
             req.redirect(req.href.admin(cat, page))
         return 'admin_config.html', {'wnoptions': self.options}
