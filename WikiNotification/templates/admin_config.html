@@ -42,7 +42,7 @@
     <legend>BCC Email Address(es)</legend>
       <label for="smtp_always_bcc">BCC Adresses:</label><br/>
       <textarea cols="60" rows="2" id="smtp_always_bcc"
-                name="smtp_always_bcc">${ ' ,'.join(
+                name="smtp_always_bcc">${ ', '.join(
         wnoptions.smtp_always_bcc.value or wnoptions.smtp_always_bcc.default
       )}</textarea>
       <p class="help">
@@ -56,7 +56,7 @@
     <legend>CC Email Address(es)</legend>
       <label for="smtp_always_cc">CC Adresses:</label><br/>
       <textarea cols="60" rows="2" id="smtp_always_cc"
-                name="smtp_always_cc">${ ' ,'.join(
+                name="smtp_always_cc">${ ', '.join(
         wnoptions.smtp_always_cc.value or wnoptions.smtp_always_cc.default
       )}</textarea>
       <p class="help">
@@ -70,7 +70,7 @@
     <legend>Banned Email Address(es)</legend>
       <label for="smtp_always_cc">Banned Addresses:</label><br/>
       <textarea cols="60" rows="2" id="banned_addresses"
-                name="banned_addresses">${ ' ,'.join(
+                name="banned_addresses">${ ', '.join(
         wnoptions.banned_addresses.value or wnoptions.banned_addresses.default
       )}</textarea>
       <p class="help">
