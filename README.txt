@@ -152,14 +152,14 @@ Aditional Notes(from user input)
 * **Another note**: a user will never get a notice of his/her own wiki
   modification (which is a little tricky when testing the plugin :))
 
-Tweaking/Customizing Notification Email Template
-------------------------------------------------
+Tweaking/Customizing The Notification Email Template
+----------------------------------------------------
 You can, if you wish, tweak the notification email template sent to your users.
 
 Copy the ``wiki_notification_email_template.txt`` file to your trac environment
-``templates/`` sub-directory and twake it to your needs.
+``templates/`` sub-directory and tweak it to your needs.
 
-Make sure you read the `Genshi Text Templates`_ documention to see if you don't
+Make sure you read the `Genshi Text Templates`_ documentation to see if you don't
 break any of the logic in that template.
 
 
