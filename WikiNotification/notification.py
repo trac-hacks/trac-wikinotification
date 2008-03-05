@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 36 2008-03-04 00:14:07Z s0undt3ch $
+# $Id: notification.py 40 2008-03-05 13:53:14Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2008-03-04 00:14:07 +0000 (Tue, 04 Mar 2008) $
-#             $Rev: 36 $
+# $LastChangedDate: 2008-03-05 13:53:14 +0000 (Wed, 05 Mar 2008) $
+#             $Rev: 40 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -100,7 +100,7 @@ class WikiNotifyEmail(NotifyEmail):
 
         self.from_name = self.config.get('wiki-notification', 'from_name')
         self.banned_addresses = self.config.getlist('wiki-notification',
-                                                    'bad_email_addresses')
+                                                    'banned_addresses')
 
     def notify(self, action, page,
                version=None,
@@ -211,6 +211,7 @@ class WikiNotifyEmail(NotifyEmail):
             tmp = []
             for rcpt in rcpts:
                 if rcpt in self.banned_addresses:
+                    self.env.log.debug("Banned Address: %s", rcpt)
                     self.blocked_addresses.append(rcpt)
                 elif not rcpt in all:
                     tmp.append(rcpt)
@@ -231,8 +232,7 @@ class WikiNotifyEmail(NotifyEmail):
         (bccaddrs, recipients) = remove_dup(bccaddrs, recipients)
 
         self.env.log.debug("Not notifying the following addresses: %s",
-                           ', '.join(["%s" % addr for addr in
-                                      self.blocked_addresses]))
+                           ', '.join(self.blocked_addresses))
 
         # if there is not valid recipient, leave immediately
         if len(recipients) < 1:
@@ -306,7 +306,10 @@ class WikiNotifyEmail(NotifyEmail):
         # Ensure the message complies with RFC2822: use CRLF line endings
         recrlf = re.compile("\r?\n")
         msgtext = CRLF.join(recrlf.split(msgtext))
-        self.server.sendmail(msg['From'], recipients, msgtext)
+        try:
+            self.server.sendmail(msg['From'], recipients, msgtext)
+        except Exception, err:
+            self.env.log.debug('Notification could not be sent: %r', err)
 
     def format_subject(self, action):
         template = self.config.get('wiki-notification', 'subject_template')

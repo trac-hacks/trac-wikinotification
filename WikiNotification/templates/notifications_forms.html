@@ -1,0 +1,23 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      py:strip="">
+  <form id="notification" class="notification" method="post"
+        action="$notification.my_not_url">
+    <fieldset>
+      <legend>Notification Settings</legend>
+      <div class="field">
+        <label for="redirect_time">
+          How many seconds should the redirect take?
+        </label>
+        <input type="text" name="redirect_time" id="redirect_time"
+               size="2" class="textwidget"
+               value="$notification.redirect_time" /><br/>
+        <input name="update" value=" Update " type="submit" />
+      </div>
+    </fieldset>
+  </form>
+</html>

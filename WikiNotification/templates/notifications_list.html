@@ -1,0 +1,33 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      py:strip="">
+
+<form method="post" action="$notification.my_not_url">
+  <py:choose test="len(notification.list) >= 1">
+  <py:when test="True">
+    <h1>List of Watched Pages</h1>
+    <table class="listing" id="watched_pages_list">
+      <thead><tr><th class="sel"></th><th>Watched Wiki Pages</th></tr></thead>
+      <tbody>
+      <py:for each="page in notification.list">
+        <tr>
+          <td><input type="checkbox" name="sel" value="$page" /></td>
+          <td style="width: 100%">
+            <a href="$notification.wikiurl/$page">$page</a>
+          </td>
+        </tr>
+      </py:for>
+      </tbody>
+    </table>
+    <div class="buttons">
+      <input type="submit" name="remove" value="Stop watching selected wiki pages"/>
+    </div>
+  </py:when>
+  <h1 py:otherwise="">You are not watching any wiki pages</h1>
+  </py:choose>
+</form>
+</html>

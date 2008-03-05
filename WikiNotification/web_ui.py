@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: web_ui.py 39 2008-03-04 15:15:49Z s0undt3ch $
+# $Id: web_ui.py 40 2008-03-05 13:53:14Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/web_ui.py $
-# $LastChangedDate: 2008-03-04 15:15:49 +0000 (Tue, 04 Mar 2008) $
-#             $Rev: 39 $
+# $LastChangedDate: 2008-03-05 13:53:14 +0000 (Wed, 05 Mar 2008) $
+#             $Rev: 40 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -121,6 +121,7 @@ class WikiNotificationWebModule(Component):
                     self._unwatch_page(req, wikipage)
                 notification['redir']= req.href.notification()
                 notification['removelist']= sel
+                notification['action']='unwatch'
             elif req.method == 'POST' and req.args.get('update'):
                 notification['redirect_time'] = \
                     req.session['watched_pages.redirect_time'] = \

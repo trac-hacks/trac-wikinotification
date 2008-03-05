@@ -8,73 +8,40 @@
   <title>Notifications</title>
 </head>
 <body>
-<div id="content" class="notification">
+  <div id="content" class="notification">
   <py:choose test="notification.error">
+  <py:when test="True">
+    <h1>Notification Error</h1>
+    <div class="system-message">
+      <p>You must add your email address to <a href="$prefs.url">Preferences</a>
+      in order to be able to use wiki notifications</p>
+    </div>
+  </py:when> <!-- py:when notification.error==True ended -->
+  <py:otherwise> <!-- py:when notification.error!=True -->
+    <py:choose test="notification.showlist">
     <py:when test="True">
-      <h1>Notification Error</h1>
-      <div class="system-message">
-        <p>You must add your email address to <a href="$prefs.url">Preferences</a>
-        in order to be able to use wiki notifications</p>
-      </div>
+      <table width="100%" cellpadding="4" cellspacing="4">
+        <tr>
+          <td width="100%" style="vertical-align: top;">
+            <xi:include href="notifications_list.html"/>
+          </td>
+          <td style="white-space: nowrap; vertical-align: top;">
+            <xi:include href="notifications_forms.html"/>
+          </td>
+        </tr>
+      </table>
     </py:when>
     <py:otherwise>
-      <py:choose test="notification.showlist">
-        <py:when test="True">
-          <form id="notification" class="notification" method="post"
-                style="float: right;" action="$notification.my_not_url">
-            <fieldset>
-              <legend>Notification Settings</legend>
-              <div class="field">
-                <label for="redirect_time">
-                  How many seconds should the redirect take?
-                </label>
-                <input type="text" name="redirect_time" id="redirect_time"
-                       size="2" class="textwidget"
-                       value="$notification.redirect_time" />
-                <input name="update" value=" Update " type="submit" />
-              </div>
-            </fieldset>
-          </form>
-      <py:choose test="len(notification.list) >= 1">
-        <py:when test="True">
-          <h1>List of Watched Pages</h1>
-          <form method="post" action="$notification.my_not_url">
-            <table class="listing" id="watched_pages_list">
-              <thead>
-                <tr>
-                  <th class="sel"></th>
-                  <th>Watched Wiki Pages</th>
-                </tr>
-              </thead>
-              <tbody>
-              <py:for each="page in notification.list">
-                <tr>
-                  <td><input type="checkbox" name="sel" value="$page" /></td>
-                  <td style="width: 100%">
-                    <a href="$notification.wikiurl/$page">$page</a>
-                  </td>
-                </tr>
-              </py:for>
-              </tbody>
-            </table>
-            <div class="buttons"><input type="submit" name="remove"
-                 value="Stop watching selected wiki pages" /></div>
-          </form>
-        </py:when>
-        <h1 py:otherwise="">You are not watching any wiki pages</h1>
-      </py:choose>
-    </py:when>
-    <py:otherwise>
-    <script language="JavaScript">
-      function redirectBack() {
-          redirurl = "$notification.redir";
-          redirect_time = $notification.redirect_time*1000;
-          self.setTimeout("self.location.href = redirurl;", redirect_time);
-      }
-    </script>
-    <fieldset>
-      <legend>$notification.action $notification.wikipage</legend>
-      <py:choose test="notification.action == 'watch'">
+      <script language="JavaScript">
+        function redirectBack() {
+            redirurl = "$notification.redir";
+            redirect_time = $notification.redirect_time*1000;
+            self.setTimeout("self.location.href = redirurl;", redirect_time);
+        }
+      </script>
+      <fieldset>
+        <legend>${ notification.action.capitalize() }</legend>
+        <py:choose test="notification.action == 'watch'">
         <py:when test="True">
         <h1>You will now recieve emails about changes made on
             <a href="$notification.wikipage.url">$notification.wikipage</a>.
@@ -90,22 +57,22 @@
             <py:for py:when="len(notification.removelist) > 1"
                 each="item in notification.removelist">
                 <a href="$notification.wikiurl/$item">$item</a>,
-                      </py:for>
-            <a py:otherwise=""
-                href="$notification.wikiurl/$notification.wikipage">$notification.wikipage</a>
+            </py:for>
+          <a py:otherwise=""
+             href="$notification.wikiurl/$notification.wikipage">$notification.wikipage</a>
           </py:choose> will be sent to you.</h1>
         </py:otherwise>
-      </py:choose>
-      <p>Redirecting you back in $notification.redirect_time seconds,
-         if it fails, please <a href="$notification.redir">click here</a></p>
-      <p>A list of the wiki pages you're watching can be found on
-         <a href="$notification.my_not_url">My Notifications</a>.</p>
-    </fieldset>
-    <script type="text/javascript">redirectBack();</script>
+        </py:choose>
+        <p>Redirecting you back in $notification.redirect_time seconds,
+           if it fails, please <a href="$notification.redir">click here</a></p>
+        <p>A list of the wiki pages you're watching can be found on
+           <a href="$notification.my_not_url">My Notifications</a>.</p>
+      </fieldset>
+      <script type="text/javascript">redirectBack();</script>
     </py:otherwise>
     </py:choose>
-  </py:otherwise>
-  </py:choose>
-</div>
+  </py:otherwise> <!-- py:when notification.error!=True ended -->
+  </py:choose> <!-- py:choose test="notification.error" ended -->
+  </div>
 </body>
 </html>
