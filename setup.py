@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# $Id: setup.py 39 2008-03-04 15:15:49Z s0undt3ch $
+# $Id: setup.py 63 2008-03-06 00:08:29Z s0undt3ch $
 
 import re
 from setuptools import setup, find_packages
@@ -23,7 +23,7 @@ setup(name=PACKAGE,
       long_description=re.sub(r'(\.\.[\s]*[\w]*::[\s]*[\w+]*\n)+', r'::\n', open('README.txt').read()),
       license=LICENSE,
       platforms="OS Independent - Anywhere Python and Trac >=0.11 is known to run.",
-      install_requires = ['Trac>=0.11dev-r6079', 'Genshi>=0.5dev-r766'],
+      install_requires = ['Trac>0.10.99', 'Genshi>=0.5dev-r766'],
       packages=find_packages(),
       package_data={'WikiNotification': ['templates/*.html', 'templates/*.txt']},
       entry_points = {

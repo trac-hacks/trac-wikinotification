@@ -113,12 +113,19 @@ To install the development version:
 
    > sudo easy_install http://wikinotification.ufsoft.org/svn/trunk
 
+If you run Trac versions < 0.11.x do the following instead:
+
+.. sourcecode:: sh
+
+  > sudo easy_install "TracWikiNotification<0.2.0"
+
 
 Trac 0.11 support And Latest WikiNotification Release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As of time of this writing (Mar 3 2008), trac>=0.11 only is supported.
 You won't need ``ctxnavadd``, aka, ``TracCtxtnavAdd`` no more.
+
 
 Aditional Notes(from user input)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -151,6 +158,7 @@ Aditional Notes(from user input)
 
 * **Another note**: a user will never get a notice of his/her own wiki
   modification (which is a little tricky when testing the plugin :))
+
 
 Tweaking/Customizing The Notification Email Template
 ----------------------------------------------------
