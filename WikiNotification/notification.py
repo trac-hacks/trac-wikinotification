@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: sw=4 ts=4 fenc=utf-8
 # =============================================================================
-# $Id: notification.py 40 2008-03-05 13:53:14Z s0undt3ch $
+# $Id: notification.py 66 2008-03-14 09:02:03Z s0undt3ch $
 # =============================================================================
 #             $URL: http://wikinotification.ufsoft.org/svn/trunk/WikiNotification/notification.py $
-# $LastChangedDate: 2008-03-05 13:53:14 +0000 (Wed, 05 Mar 2008) $
-#             $Rev: 40 $
+# $LastChangedDate: 2008-03-14 09:02:03 +0000 (Fri, 14 Mar 2008) $
+#             $Rev: 66 $
 #   $LastChangedBy: s0undt3ch $
 # =============================================================================
 # Copyright (C) 2006 UfSoft.org - Pedro Algarvio <ufs@ufsoft.org>
@@ -19,7 +19,6 @@ import md5
 from trac import __version__
 from trac.core import *
 from trac.util.text import CRLF
-from trac.util.datefmt import to_timestamp
 from trac.wiki.model import WikiPage
 from trac.versioncontrol.diff import unified_diff
 from trac.notification import NotifyEmail
@@ -111,6 +110,10 @@ class WikiNotifyEmail(NotifyEmail):
         self.page = page
         self.change_author = author
         self.time = time
+        self.action = action
+        self.version = version
+#        self.env.log.debug("Notify Action: %s", action)
+#        self.env.log.debug("Page time: %r, %s", time, time)
 
         if action == "added":
             self.newwiki = True
@@ -140,21 +143,8 @@ class WikiNotifyEmail(NotifyEmail):
         self.data["wikidiff"] = self.wikidiff
 
         subject = self.format_subject(action.replace('_', ' '))
-        if not self.newwiki:
-            subject = 'Re: %s' % subject
 
         NotifyEmail.notify(self, page.name, subject)
-
-    def get_message_id(self, rcpt, time=None):
-        """Generate a predictable, but sufficiently unique message ID."""
-        s = '%s.%s.%d.%d.%s' % (self.config.get('project', 'url'),
-                                self.page.name, self.page.version,
-                                to_timestamp(time),
-                                rcpt.encode('ascii', 'ignore'))
-        dig = md5.new(s).hexdigest()
-        host = self.from_email[self.from_email.find('@') + 1:]
-        msgid = '<%03d.%s@%s>' % (len(s), dig, host)
-        return msgid
 
     def get_recipients(self, pagename):
         if not self.db:
@@ -188,6 +178,7 @@ class WikiNotifyEmail(NotifyEmail):
 
         stream = self.template.generate(**self.data)
         body = stream.render('text')
+#        self.env.log.debug('Email Contents: %s', body)
         projname = self.config.get('project', 'name')
         public_cc = self.config.getbool('wiki-notification', 'use_public_cc')
         headers = {}
@@ -240,12 +231,7 @@ class WikiNotifyEmail(NotifyEmail):
             return
 
         dest = self.change_author or 'anonymous'
-        message_id = self.get_message_id(dest, self.time)
-        headers['Message-ID'] = message_id
         headers['X-Trac-Wiki-URL'] = self.data['link']
-        if not self.newwiki:
-            reply_msgid = self.get_message_id(dest)
-            headers['In-Reply-To'] = headers['References'] = reply_msgid
 
         pcc = accaddrs
         if public_cc:
