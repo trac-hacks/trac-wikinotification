@@ -46,7 +46,7 @@ class WikiNotificationWebModule(Component):
     def get_navigation_items(self, req):
         if self.config.getbool('notification', 'smtp_enabled', False):
             yield('metanav', 'notification',
-                  tag.A('My Notifications',
+                  tag.a('My Notifications',
                         title="Wiki Pages Change Notifications",
                         href=req.href.notification()))
 
