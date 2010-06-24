@@ -45,10 +45,11 @@ class WikiNotificationWebModule(Component):
 
     def get_navigation_items(self, req):
         if self.config.getbool('notification', 'smtp_enabled', False):
-            yield('metanav', 'notification',
-                  tag.a('My Notifications',
-                        title="Wiki Pages Change Notifications",
-                        href=req.href.notification()))
+            if req.perm.has_permission('WIKI_VIEW'):
+                yield('metanav', 'notification',
+                      tag.a('My Notifications',
+                            title="Wiki Pages Change Notifications",
+                            href=req.href.notification()))
 
 
     # ITemplateStreamFilter method
@@ -83,6 +84,8 @@ class WikiNotificationWebModule(Component):
             return True
 
     def process_request(self, req):
+        req.perm.require('WIKI_VIEW')
+
         if 'email' not in req.session:
             data = { 'notification' : {'error':True},
                     'prefs': {'url':req.href.prefs() }}
