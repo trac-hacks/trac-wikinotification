@@ -23,6 +23,7 @@ from trac.wiki.model import WikiPage
 from trac.versioncontrol.diff import unified_diff
 from trac.notification import NotifyEmail, NotificationSystem
 from trac.config import Option, BoolOption, ListOption, IntOption
+from trac.util.translation import _, deactivate, reactivate
 
 from genshi.template.text import NewTextTemplate
 
@@ -92,7 +93,6 @@ class WikiNotifyEmail(NotifyEmail):
     COLS = 75
     newwiki = False
     wikidiff = None
-    blocked_addresses = []
 
     def __init__(self, env):
         NotifyEmail.__init__(self, env)
@@ -177,15 +177,20 @@ class WikiNotifyEmail(NotifyEmail):
             self.data["wikidiff"] = None
 
         stream = self.template.generate(**self.data)
-        body = stream.render('text')
+        # don't translate the e-mail stream
+        t = deactivate()
+        try:
+            body = stream.render('text')
+        finally:
+            reactivate(t)
 #        self.env.log.debug('Email Contents: %s', body)
-        projname = self.config.get('project', 'name')
+        projname = self.env.project_name
         public_cc = self.config.getbool('wiki-notification', 'use_public_cc')
         headers = {}
         headers['X-Mailer'] = 'Trac %s, by Edgewall Software' % __version__
         headers['X-Trac-Version'] =  __version__
         headers['X-Trac-Project'] =  projname
-        headers['X-URL'] = self.config.get('project', 'url')
+        headers['X-URL'] = self.env.project_url
         headers['Precedence'] = 'bulk'
         headers['Auto-Submitted'] = 'auto-generated'
         headers['Subject'] = self.subject
@@ -197,13 +202,14 @@ class WikiNotifyEmail(NotifyEmail):
             return filter(lambda x: x, \
                           [self.get_smtp_address(addr) for addr in rcpts])
 
+        blocked_addresses = []
         def remove_dup(rcpts, all):
             """Remove duplicates"""
             tmp = []
             for rcpt in rcpts:
                 if rcpt in self.banned_addresses:
                     self.env.log.debug("Banned Address: %s", rcpt)
-                    self.blocked_addresses.append(rcpt)
+                    blocked_addresses.append(rcpt)
                 elif not rcpt in all:
                     tmp.append(rcpt)
                     all.append(rcpt)
@@ -212,9 +218,11 @@ class WikiNotifyEmail(NotifyEmail):
         toaddrs = build_addresses(torcpts)
         ccaddrs = build_addresses(ccrcpts)
         accparam = self.config.getlist('wiki-notification', 'smtp_always_cc')
-        accaddrs = accparam and build_addresses(accparam) or []
+        accaddrs = accparam and \
+                   build_addresses(accparam.replace(',', ' ').split()) or []
         bccparam = self.config.getlist('wiki-notification', 'smtp_always_bcc')
-        bccaddrs = bccparam and build_addresses(bccparam) or []
+        bccaddrs = bccparam and \
+                   build_addresses(bccparam.replace(',', ' ').split()) or []
 
         recipients = []
         (toaddrs, recipients) = remove_dup(toaddrs, recipients)
@@ -223,7 +231,7 @@ class WikiNotifyEmail(NotifyEmail):
         (bccaddrs, recipients) = remove_dup(bccaddrs, recipients)
 
         self.env.log.debug("Not notifying the following addresses: %s",
-                           ', '.join(self.blocked_addresses))
+                           ', '.join(blocked_addresses))
 
         # if there is not valid recipient, leave immediately
         if len(recipients) < 1:
@@ -287,12 +295,8 @@ class WikiNotifyEmail(NotifyEmail):
         self.add_headers(msg, headers);
         self.add_headers(msg, mime_headers);
         self.env.log.info("Sending notification to %s" % (recipients,))
-        msgtext = msg.as_string()
-        # Ensure the message complies with RFC2822: use CRLF line endings
-        recrlf = re.compile("\r?\n")
-        msgtext = CRLF.join(recrlf.split(msgtext))
         try:
-            NotificationSystem(self.env).send_email(msg['From'], recipients, msgtext)
+            NotificationSystem(self.env).send_email(msg['From'], recipients, msg.as_string())
         except Exception, err:
             self.env.log.debug('Notification could not be sent: %r', err)
 
