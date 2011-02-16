@@ -1,48 +1,48 @@
-
-#if action == 'added'
-Added page "${name}" by ${author} from ${ip}*
-Page URL: <${link}>
- #if comment
-Comment: ${comment}
- #end
+{% choose action %}\
+{%   when 'added' %}\
+Page "$name" was added by $author
+{% if comment %}\
+Comment: $comment
+{% end %}\
 Content:
 -------8<------8<------8<------8<------8<------8<------8<------8<--------
-${text}
+$text
 -------8<------8<------8<------8<------8<------8<------8<------8<--------
-#end
-#if action == 'modified'
-Changed page "${name}" by ${author} from ${ip}*
-Page URL: <${link}>
-Diff URL: <${linkdiff}>
-Revision ${version}
- #if comment
-Comment: ${comment}
- #end
-
- #if wikidiff!=None
+{%   end %}\
+{%   when 'modified' %}\
+Page "$name" was changed by $author
+Diff URL: <$linkdiff>
+Revision $version
+{% if comment %}\
+Comment: $comment
+{% end %}\
+{% choose wikidiff %}\
+{% when None %}\
+Changes in attached ${name}.diff file.
+{% end %}\
+{% otherwise %}\
+Changes:
 -------8<------8<------8<------8<------8<------8<------8<------8<--------
-${wikidiff}
+$wikidiff\
 -------8<------8<------8<------8<------8<------8<------8<------8<--------
- #end
- #if wikidiff==None
-Changes on attached ${name}.diff file.
- #end
-#end
-#if action == 'deleted'
-Deleted page "${name}" by ${author} from ${ip}*
-#end
-#if action == 'deleted_version'
-Page URL: <${link}>
-Deleted version "${version}" of page "${name}" by  ${author} from ${ip}*
-#end
-
-* The IP shown here might not mean anything if the user or the server is
-behind a proxy.
+{% end %}\
+{% end %}\
+{%   end %}\
+{%   when 'deleted' %}\
+Page "$name" was deleted by $author
+{%   end %}\
+{%   when 'deleted_version' %}\
+Version "$version" of page "$name" was deleted by $author
+{%   end %}\
+{% end %}\
 
 --
-${project.name} <${project.url}>
-${project.descr}
+${_('Page URL: <%(link)s>', link=link)}
+$project.name <${project.url or abs_href()}>
+{% if project.descr %}\
+$project.descr
+{% end %}\
 
-This is an automated message. Someone at ${project.url} added your email
-address to be notified of changes on ${name}. If it was not you, please
-report to ${project.admin}.
+This is an automated message. Someone added your email address to be
+notified of changes on '$name' page.
+If it was not you, please report to ${project.admin}.

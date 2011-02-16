@@ -21,10 +21,10 @@ from trac.core import *
 from trac.util.text import CRLF
 from trac.wiki.model import WikiPage
 from trac.versioncontrol.diff import unified_diff
-from trac.notification import NotifyEmail
+from trac.notification import NotifyEmail, NotificationSystem
 from trac.config import Option, BoolOption, ListOption, IntOption
 
-from genshi.template.text import TextTemplate
+from genshi.template.text import NewTextTemplate
 
 
 diff_header = """Index: %(name)s
@@ -286,20 +286,19 @@ class WikiNotifyEmail(NotifyEmail):
 
         self.add_headers(msg, headers);
         self.add_headers(msg, mime_headers);
-        self.env.log.info("Sending SMTP notification to %s:%d to %s"
-                           % (self.smtp_server, self.smtp_port, recipients))
+        self.env.log.info("Sending notification to %s" % (recipients,))
         msgtext = msg.as_string()
         # Ensure the message complies with RFC2822: use CRLF line endings
         recrlf = re.compile("\r?\n")
         msgtext = CRLF.join(recrlf.split(msgtext))
         try:
-            self.server.sendmail(msg['From'], recipients, msgtext)
+            NotificationSystem(self.env).send_email(msg['From'], recipients, msgtext)
         except Exception, err:
             self.env.log.debug('Notification could not be sent: %r', err)
 
     def format_subject(self, action):
         template = self.config.get('wiki-notification', 'subject_template')
-        template = TextTemplate(template.encode('utf8'))
+        template = NewTextTemplate(template.encode('utf8'))
 
         prefix = self.config.get('notification', 'smtp_subject_prefix')
         if prefix == '__default__':
@@ -308,6 +307,7 @@ class WikiNotifyEmail(NotifyEmail):
         data = {
             'page': self.page,
             'prefix': prefix,
-            'action': action
+            'action': action,
+            'env': self.env,
         }
         return template.generate(**data).render('text', encoding=None).strip()
