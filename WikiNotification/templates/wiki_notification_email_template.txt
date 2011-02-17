@@ -34,6 +34,12 @@ Page "$name" was deleted by $author
 {%   when 'deleted_version' %}\
 Version "$version" of page "$name" was deleted by $author
 {%   end %}\
+{%   when 'renamed' %}\
+Page "$old_name" was renamed to "$name" by $author
+{% if redirect %}\
+Redirect to the renamed page was left behind.
+{% end %}\
+{%   end %}\
 {% end %}\
 
 --
@@ -44,5 +50,5 @@ $project.descr
 {% end %}\
 
 This is an automated message. Someone added your email address to be
-notified of changes on '$name' page.
+notified of changes on '${old_name or name}' page.
 If it was not you, please report to ${project.admin}.

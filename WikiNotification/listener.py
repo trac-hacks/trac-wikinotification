@@ -23,6 +23,10 @@ class WikiNotificationChangeListener(Component):
     """Class that listens for wiki changes."""
     implements(IWikiChangeListener)
 
+    def __init__(self, *args, **kwargs):
+        self.db = None
+        super(Component, self).__init__(*args, **kwargs)
+
     # Internal Methods
     def _get_req(self):
         """Grab req from inspect.stack()"""
@@ -55,3 +59,18 @@ class WikiNotificationChangeListener(Component):
         version, time, author, comment, ipnr = page.get_history().next()
         wne = WikiNotifyEmail(page.env)
         wne.notify("deleted_version", page, version=version+1, author=author, ipnr=ipnr)
+
+    def wiki_page_renamed(self, page, old_name):
+        req = self._get_req()
+        ipnr = req.remote_addr
+        author = req.authname
+        redirect = req.args.get('redirect')
+        self._watch_renamed_page(page.name, old_name)
+        wne = WikiNotifyEmail(page.env)
+        wne.notify("renamed", page, author=author, ipnr=ipnr, redirect=redirect, old_name=old_name)
+
+    def _watch_renamed_page(self, pagename, old_pagename):
+        if not self.db:
+            self.db = self.env.get_db_cnx()
+        cursor = self.db.cursor()
+        cursor.execute("UPDATE session_attribute SET value=value || %s WHERE name=%s AND value LIKE %s AND value NOT LIKE %s", ('%s,' % pagename, 'watched_pages', '%,' + old_pagename + ',%', '%,' + pagename + ',%'))

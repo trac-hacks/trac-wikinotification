@@ -78,7 +78,7 @@ class WikiNotificationSystem(Component):
         watching/un-watching a wiki page""")
 
     subject_template = Option(
-        'wiki-notification', 'subject_template', '$prefix $page.name $action',
+        'wiki-notification', 'subject_template', '$prefix $pagename $action',
         "A Genshi text template snippet used to get the notification subject.")
 
     banned_addresses = ListOption(
@@ -106,12 +106,16 @@ class WikiNotifyEmail(NotifyEmail):
                time=None,
                comment=None,
                author=None,
-               ipnr=None):
+               ipnr=None,
+               redirect=False,
+               old_name=None):
         self.page = page
         self.change_author = author
         self.time = time
         self.action = action
         self.version = version
+        self.redirect = redirect
+        self.old_name = old_name
 #        self.env.log.debug("Notify Action: %s", action)
 #        self.env.log.debug("Page time: %r, %s", time, time)
 
@@ -119,6 +123,8 @@ class WikiNotifyEmail(NotifyEmail):
             self.newwiki = True
 
         self.data['name']= page.name
+        self.data['old_name']= old_name
+        self.data['redirect']= redirect
         self.data['text']= page.text
         self.data['version']= version
         self.data['author']= author
@@ -309,7 +315,7 @@ class WikiNotifyEmail(NotifyEmail):
             prefix = '[%s]' % self.config.get('project', 'name')
 
         data = {
-            'page': self.page,
+            'pagename': self.old_name or self.page.name,
             'prefix': prefix,
             'action': action,
             'env': self.env,
