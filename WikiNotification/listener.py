@@ -29,11 +29,18 @@ class WikiNotificationChangeListener(Component):
 
     # Internal Methods
     def _get_req(self):
-        """Grab req from inspect.stack()"""
-        for x in inspect.stack():
-            if 'req' in x[0].f_locals:
-                self.env.log.debug(x[0].f_locals['req'])
-                return x[0].f_locals['req']
+        """Grab req from the stack"""
+        frame = inspect.currentframe()
+        try:
+            while frame.f_back:
+                frame = frame.f_back
+                request = frame.f_locals.get('req')
+                if request:
+                    self.env.log.debug(request)
+                    return request
+        finally:
+            del frame
+        return None
 
     # IWikiChangeListener methods
     def wiki_page_added(self, page):
