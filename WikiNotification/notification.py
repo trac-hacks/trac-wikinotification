@@ -14,7 +14,6 @@
 # =============================================================================
 
 import re
-import md5
 
 from trac import __version__
 from trac.core import *
