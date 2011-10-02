@@ -222,12 +222,8 @@ class WikiNotifyEmail(NotifyEmail):
 
         toaddrs = build_addresses(torcpts)
         ccaddrs = build_addresses(ccrcpts)
-        accparam = self.config.getlist('wiki-notification', 'smtp_always_cc')
-        accaddrs = accparam and \
-                   build_addresses(accparam.replace(',', ' ').split()) or []
-        bccparam = self.config.getlist('wiki-notification', 'smtp_always_bcc')
-        bccaddrs = bccparam and \
-                   build_addresses(bccparam.replace(',', ' ').split()) or []
+        ccaddrs = build_addresses(self.config.getlist('wiki-notification', 'smtp_always_cc', []))
+        bccaddrs = build_addresses(self.config.getlist('wiki-notification', 'smtp_always_bcc', []))
 
         recipients = []
         (toaddrs, recipients) = remove_dup(toaddrs, recipients)
