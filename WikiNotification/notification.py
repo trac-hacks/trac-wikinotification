@@ -222,7 +222,7 @@ class WikiNotifyEmail(NotifyEmail):
 
         toaddrs = build_addresses(torcpts)
         ccaddrs = build_addresses(ccrcpts)
-        ccaddrs = build_addresses(self.config.getlist('wiki-notification', 'smtp_always_cc', []))
+        accaddrs = build_addresses(self.config.getlist('wiki-notification', 'smtp_always_cc', []))
         bccaddrs = build_addresses(self.config.getlist('wiki-notification', 'smtp_always_bcc', []))
 
         recipients = []
