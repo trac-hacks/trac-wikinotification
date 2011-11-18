@@ -250,14 +250,6 @@ class WikiNotifyEmail(NotifyEmail):
         if pcc:
             headers['Cc'] = ', '.join(pcc)
         headers['Date'] = formatdate()
-        # sanity check
-        if not self._charset.body_encoding:
-            try:
-                dummy = body.encode('ascii')
-            except UnicodeDecodeError:
-                raise TracError(_("WikiPage contains non-Ascii chars. " \
-                                  "Please change encoding setting"))
-
         if attach_diff:
             # With MIMEMultipart the charset has to be set before any parts
             # are added.
