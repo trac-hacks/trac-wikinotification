@@ -152,7 +152,7 @@ class WikiNotifyEmail(NotifyEmail):
         NotifyEmail.notify(self, page.name, subject)
 
     def get_recipients(self, pagename):
-        if not self.db:
+        if not getattr(self, 'db'):
             self.db = self.env.get_db_cnx()
         cursor = self.db.cursor()
         QUERY_SIDS = """SELECT sid from session_attribute
