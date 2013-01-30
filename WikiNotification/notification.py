@@ -152,22 +152,22 @@ class WikiNotifyEmail(NotifyEmail):
         NotifyEmail.notify(self, page.name, subject)
 
     def get_recipients(self, pagename):
-        if not getattr(self, 'db'):
-            self.db = self.env.get_db_cnx()
-        cursor = self.db.cursor()
         QUERY_SIDS = """SELECT sid from session_attribute
                         WHERE name=%s AND value LIKE %s"""
-        tos = []
-        cursor.execute(QUERY_SIDS, ('watched_pages', '%,'+pagename+',%'))
-        sids = cursor.fetchall()
-        self.env.log.debug("SID'S TO NOTIFY: %s", sids)
+
         QUERY_EMAILS = """SELECT value FROM session_attribute
                           WHERE name=%s AND sid=%s"""
-        for sid in sids:
-            if sid[0] != self.change_author:
-                self.env.log.debug('SID: %s', sid[0])
-                cursor.execute(QUERY_EMAILS, ('email', sid[0]))
-                tos.append(cursor.fetchone()[0])
+        tos = []
+        with self.env.db_query as db:
+            cursor = db.cursor()
+            cursor.execute(QUERY_SIDS, ('watched_pages', '%,'+pagename+',%'))
+            sids = cursor.fetchall()
+            self.env.log.debug("SID'S TO NOTIFY: %s", sids)
+            for sid in sids:
+                if sid[0] != self.change_author:
+                    self.env.log.debug('SID: %s', sid[0])
+                    cursor.execute(QUERY_EMAILS, ('email', sid[0]))
+                    tos.append(cursor.fetchone()[0])
 
         self.env.log.debug("TO's TO NOTIFY: %s", tos)
         return (tos, [])
