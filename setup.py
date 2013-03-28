@@ -22,7 +22,7 @@ setup(
     download_url='http://python.org/pypi/TracWikiNotification',
     description=SUMMARY,
     long_description=re.sub(r'(\.\.[\s]*[\w]*::[\s]*[\w+]*\n)+', r'::\n',
-                            open('README.txt').read()),
+                            open('README.rst').read()),
     license=LICENSE,
     platforms="OS Independent - Anywhere Python and Trac >=0.11 is known to run.",
     install_requires = ['Trac>0.10.99', 'Genshi>=0.5dev'],
