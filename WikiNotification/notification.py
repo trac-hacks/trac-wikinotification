@@ -241,6 +241,7 @@ class WikiNotifyEmail(NotifyEmail):
 
         dest = self.change_author or 'anonymous'
         headers['X-Trac-Wiki-URL'] = self.data['link']
+        charset = str(self._charset)
 
         pcc = accaddrs
         if public_cc:
@@ -253,37 +254,25 @@ class WikiNotifyEmail(NotifyEmail):
         if attach_diff:
             # With MIMEMultipart the charset has to be set before any parts
             # are added.
-            msg = MIMEMultipart()
-            del msg['Content-Transfer-Encoding']
-            msg.set_charset(self._charset)
+            msg = MIMEMultipart('mixed', None, [], charset=charset)
             msg.preamble = 'This is a multi-part message in MIME format.'
 
             # The text Message
-            mail = MIMEText(body, 'plain')
+            mail = MIMEText(body, 'plain', charset)
             mail.add_header('Content-Disposition', 'inline',
                             filename="message.txt")
-            # Re-Setting Content Transfer Encoding
-            del mail['Content-Transfer-Encoding']
-            mail.set_charset(self._charset)
             msg.attach(mail)
             try:
                 # The Diff Attachment
-                attach = MIMEText(self.wikidiff.encode('utf-8'), 'x-patch')
+                attach = MIMEText(self.wikidiff.encode('utf-8'), 'x-patch', charset)
                 attach.add_header('Content-Disposition', 'inline',
                                   filename=self.page.name + '.diff')
-                del attach['Content-Transfer-Encoding']
-                attach.set_charset(self._charset)
                 msg.attach(attach)
             except AttributeError:
                 # We don't have a wikidiff to attach
                 pass
         else:
-            msg = MIMEText(body, 'plain')
-            # Message class computes the wrong type from MIMEText constructor,
-            # which does not take a Charset object as initializer. Reset the
-            # encoding type to force a new, valid evaluation
-            del msg['Content-Transfer-Encoding']
-            msg.set_charset(self._charset)
+            msg = MIMEText(body, 'plain', charset)
 
         self.add_headers(msg, headers);
         self.add_headers(msg, mime_headers);
