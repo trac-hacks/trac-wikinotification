@@ -21,11 +21,12 @@ It's as simple as:
    [components]
    wikinotification.* = enabled
 
+``smtp_enabled`` has to be enabled in ``notification`` configuration section.
 
 Available Configuration Options
 -------------------------------
 These are the options available to include on your ``trac.ini`` under
-``wiki-notification``.
+``wiki-notification``. Some of them you can configure through web admin interface.
 
 =====================  ==========================  ==========================
  **Config Setting**     **Default Value**          **Explanation**
