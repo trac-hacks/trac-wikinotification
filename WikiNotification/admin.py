@@ -114,15 +114,8 @@ class WikiNotificationAdminPanel(Component):
     def _do_users(self, req, cat, page, path_info):
         sql = "SELECT sid,authenticated,value " + \
               "FROM session_attribute WHERE name = 'watched_pages';"
-        db = self.env.get_db_cnx()
-        cursor = db.cursor()
         notified_users = []
-        cursor.execute(sql)
-        results = cursor.fetchall()
-        if not results:
-            return 'admin_user_notifications.html', {'wpages': notified_users,
-                                                     'wikiurl':req.href.wiki()}
-        for user, authenticated, pages in results:
+        for user, authenticated, pages in self.env.db_query(sql):
             attrs = {}
             attrs['sid'] = user
             attrs['authenticated'] = authenticated
