@@ -23,6 +23,8 @@ from trac.versioncontrol.diff import unified_diff
 from trac.notification import NotifyEmail, NotificationSystem
 from trac.config import Option, BoolOption, ListOption, IntOption
 from trac.util.translation import _, deactivate, reactivate
+from trac.resource import Resource
+from trac.perm import PermissionSystem
 
 from genshi.template.text import NewTextTemplate
 
@@ -163,8 +165,10 @@ class WikiNotifyEmail(NotifyEmail):
             cursor.execute(QUERY_SIDS, ('watched_pages', '%,'+pagename+',%'))
             sids = cursor.fetchall()
             self.env.log.debug("SID'S TO NOTIFY: %s", sids)
+            perm = PermissionSystem(self.env)
+            resource = Resource('wiki', pagename)
             for sid in sids:
-                if sid[0] != self.change_author:
+                if sid[0] != self.change_author and perm.check_permission(action='WIKI_VIEW', username=sid[0], resource=resource):
                     self.env.log.debug('SID: %s', sid[0])
                     cursor.execute(QUERY_EMAILS, ('email', sid[0]))
                     sid_email = cursor.fetchone()
