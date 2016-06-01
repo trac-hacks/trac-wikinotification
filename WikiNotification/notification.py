@@ -167,7 +167,9 @@ class WikiNotifyEmail(NotifyEmail):
                 if sid[0] != self.change_author:
                     self.env.log.debug('SID: %s', sid[0])
                     cursor.execute(QUERY_EMAILS, ('email', sid[0]))
-                    tos.append(cursor.fetchone()[0])
+                    sid_email = cursor.fetchone()
+                    if sid_email is not None:
+                        tos.append(sid_email[0])
 
         self.env.log.debug("TO's TO NOTIFY: %s", tos)
         return (tos, [])
