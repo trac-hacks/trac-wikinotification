@@ -187,11 +187,13 @@ class WikiNotifyEmail(NotifyEmail):
             from email.MIMEMultipart import MIMEMultipart
             self.data["wikidiff"] = None
 
+        charset = str(self._charset)
+
         stream = self.template.generate(**self.data)
         # don't translate the e-mail stream
         t = deactivate()
         try:
-            body = stream.render('text')
+            body = stream.render('text', encoding=charset)
         finally:
             reactivate(t)
 #        self.env.log.debug('Email Contents: %s', body)
@@ -246,7 +248,6 @@ class WikiNotifyEmail(NotifyEmail):
 
         dest = self.change_author or 'anonymous'
         headers['X-Trac-Wiki-URL'] = self.data['link']
-        charset = str(self._charset)
 
         pcc = accaddrs
         if public_cc:
