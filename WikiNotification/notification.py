@@ -36,8 +36,8 @@ diff_header = """Index: %(name)s
 """
 
 class WikiNotificationSystem(Component):
-    smtp_from = Option(
-        'wiki-notification', 'smtp_from', 'trac+wiki@localhost',
+    from_email = Option(
+        'wiki-notification', 'from_email', 'trac+wiki@localhost',
         """Sender address to use in notification emails.""")
 
     from_name = Option(
@@ -90,7 +90,6 @@ class WikiNotificationSystem(Component):
 
 class WikiNotifyEmail(NotifyEmail):
     template_name = "wiki_notification_email_template.txt"
-    from_email = 'trac+wiki@localhost'
     COLS = 75
     newwiki = False
     wikidiff = None
@@ -98,7 +97,8 @@ class WikiNotifyEmail(NotifyEmail):
     def __init__(self, env):
         NotifyEmail.__init__(self, env)
 
-        self.from_name = self.config.get('wiki-notification', 'from_name')
+        self.from_email = self.config.get('wiki-notification', 'from_email')
+        self.from_name = self.config.get('wiki-notification', 'from_name') or self.env.project_name
         self.banned_addresses = self.config.getlist('wiki-notification',
                                                     'banned_addresses')
 
@@ -195,17 +195,16 @@ class WikiNotifyEmail(NotifyEmail):
         finally:
             reactivate(t)
 #        self.env.log.debug('Email Contents: %s', body)
-        projname = self.env.project_name
         public_cc = self.config.getbool('wiki-notification', 'use_public_cc')
         headers = {}
         headers['X-Mailer'] = 'Trac %s, by Edgewall Software' % __version__
         headers['X-Trac-Version'] =  __version__
-        headers['X-Trac-Project'] =  projname
+        headers['X-Trac-Project'] =  self.env.project_name
         headers['X-URL'] = self.env.project_url
         headers['Precedence'] = 'bulk'
         headers['Auto-Submitted'] = 'auto-generated'
         headers['Subject'] = self.subject
-        headers['From'] = (self.from_name or projname, self.from_email)
+        headers['From'] = (self.from_name, self.from_email) if self.from_name else self.from_email
         headers['Reply-To'] = self.replyto_email
 
         def build_addresses(rcpts):
@@ -284,7 +283,7 @@ class WikiNotifyEmail(NotifyEmail):
         self.add_headers(msg, mime_headers);
         self.env.log.info("Sending notification to %s" % (recipients,))
         try:
-            NotificationSystem(self.env).send_email(msg['From'], recipients, msg.as_string())
+            NotificationSystem(self.env).send_email(self.from_email, recipients, msg.as_string())
         except Exception, err:
             self.env.log.debug('Notification could not be sent: %r', err)
 
