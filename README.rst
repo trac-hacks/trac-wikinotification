@@ -92,43 +92,19 @@ following example:
    subject_template = Foo $prefix $page.name $action
    banned_addresses = banned.user1@somedomain, banned.user2@somedomain
 
-
-**Note**: For an up-to-date version of this info please `read this`_.
-
-
 Download and Installation
 -------------------------
 
-Trac WikiNotification can be installed with `Easy Install`_ by typing:
+Run the following to install this plugin:
 
 .. sourcecode:: sh
 
-   > sudo easy_install TracWikiNotification
-
-To install the development version:
-
-.. sourcecode:: sh
-
-   > sudo easy_install http://wikinotification.ufsoft.org/svn/trunk
-
-If you run Trac versions < 0.11.x do the following instead:
-
-.. sourcecode:: sh
-
-  > sudo easy_install "TracWikiNotification<0.2.0"
-
-
-Trac 0.11 support And Latest WikiNotification Release
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-As of time of this writing (Mar 3 2008), trac>=0.11 only is supported.
-You won't need ``ctxnavadd``, aka, ``TracCtxtnavAdd`` no more.
-
+   > sudo pip install TracWikiNotification
 
 Aditional Notes(from user input)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* ``easy_install`` is run from the command line (on Linux) not from within
+* ``pip`` is run from the command line (on Linux) not from within
   Python.
 
 
