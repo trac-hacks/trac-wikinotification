@@ -53,7 +53,7 @@ These are the options available to include on your ``trac.ini`` under
                                                    to, addresses can be seen
                                                    by all recipients (Cc:).
 ---------------------  --------------------------  --------------------------
-*smtp_from*            trac.wiki\@localhost        Sender address to use in
+*from_email*           trac.wiki\@localhost        Sender address to use in
                                                    notification emails.
 ---------------------  --------------------------  --------------------------
 *from_name*            None                        Sender name to use in
@@ -88,7 +88,7 @@ following example:
    redirect_time = 5
    smtp_always_bcc = someone@somedomain, another.one@somedomain
    smtp_always_cc = someone.else@somedomain
-   smtp_from = trac.wiki@localhost
+   from_email = trac.wiki@localhost
    from_name = Custom Name
    use_public_cc = false
    attach_diff = true
@@ -154,7 +154,7 @@ Aditional Notes(from user input)
 
     [wiki-notification]
     smtp_always_cc = someone@somedomain
-    smtp_from = trac.wiki@localhost
+    from_email = trac.wiki@localhost
 
 
 * **Another note**: a user will never get a notice of his/her own wiki
