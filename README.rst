@@ -2,15 +2,12 @@
  Trac Wiki Notification Plugin
 ==============================
 
-Trac WikiNotification_ is a plugin that allows users(even anonymous,
+Trac WikiNotification is a plugin that allows users(even anonymous,
 as long as email is set) to select the wiki pages that they wish to
 be notified(by email) when a change occurs on it.
 
 **Note**: The user updating the wiki page won't be notified about his own
 changes.
-
-You can find more info on the trac WikiNotification_ site where bugs and new
-feature requests should go to.
 
 Enabling the Plugin
 -------------------
@@ -26,7 +23,7 @@ It's as simple as:
 Available Configuration Options
 -------------------------------
 These are the options available to include on your ``trac.ini`` under
-``wiki-notification``. Some of them you can configure through web admin interface.
+``wiki-notification``. You can configure them through the web admin interface, too.
 
 =====================  ==========================  ==========================
  **Config Setting**     **Default Value**          **Explanation**
@@ -102,7 +99,7 @@ following example:
 Download and Installation
 -------------------------
 
-Trac WikiNotification_ can be installed with `Easy Install`_ by typing:
+Trac WikiNotification can be installed with `Easy Install`_ by typing:
 
 .. sourcecode:: sh
 
@@ -172,7 +169,5 @@ Make sure you read the `Genshi Text Templates`_ documentation to see if you don'
 break any of the logic in that template.
 
 
-.. _read this: http://wikinotification.ufsoft.org/browser/trunk/README
 .. _Easy Install: http://peak.telecommunity.com/DevCenter/EasyInstall
-.. _WikiNotification: http://wikinotification.ufsoft.org
 .. _Genshi Text Templates: http://genshi.edgewall.org/wiki/Documentation/0.4.x/text-templates.html
