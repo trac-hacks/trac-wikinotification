@@ -98,8 +98,8 @@ class WikiNotificationAdminPanel(Component):
 
         if req.method == 'POST':
             for option in ('redirect_time', 'smtp_always_bcc', 'smtp_always_cc',
-                           'smtp_from', 'use_public_cc', 'banned_addresses',
-                           'attach_diff'):
+                           'from_email', 'use_public_cc', 'banned_addresses',
+                           'attach_diff', 'subject_template', 'from_name'):
                 if option in ('use_public_cc', 'attach_diff'):
                     self.config.set('wiki-notification', option,
                                     (req.args.get(option) == 'yes') and \
