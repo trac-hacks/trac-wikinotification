@@ -67,7 +67,7 @@ These are the options available to include on your ``trac.ini`` under
                                                    attachment instead of on
                                                    the email text body.
 ---------------------  --------------------------  --------------------------
-*subject_template*     $prefix $page.name $action  A Genshi text template
+*subject_template*     $prefix $pagename $action   A Genshi text template
                                                    snippet used to get the
                                                    notification subject.
 ---------------------  --------------------------  --------------------------
@@ -89,7 +89,7 @@ following example:
    from_name = Custom Name
    use_public_cc = false
    attach_diff = true
-   subject_template = Foo $prefix $page.name $action
+   subject_template = Foo $prefix $pagename $action
    banned_addresses = banned.user1@somedomain, banned.user2@somedomain
 
 Download and Installation
@@ -133,6 +133,9 @@ Aditional Notes(from user input)
 * **Another note**: a user will never get a notice of his/her own wiki
   modification (which is a little tricky when testing the plugin :))
 
+* Please note that older versions of the plugin may set a subject_template config value, similar to
+  `subject_template = $prefix $page.name $action`.  This will result in '`UndefinedError: "page" not defined`'.
+  Use `$pagename` instead of `$page.name`.
 
 Tweaking/Customizing The Notification Email Template
 ----------------------------------------------------
