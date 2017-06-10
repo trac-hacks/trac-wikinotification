@@ -47,30 +47,27 @@ class WikiNotificationChangeListener(Component):
         wne = WikiNotifyEmail(page.env)
         wne.notify("added", page, version, time, comment, author, ipnr)
 
-    def wiki_page_changed(self, page, version, time, comment, author, ipnr):
+    def wiki_page_changed(self, page, version, time, comment, author, ipnr=None):
         wne = WikiNotifyEmail(page.env)
         wne.notify("modified", page, version, time, comment, author, ipnr)
 
     def wiki_page_deleted(self, page):
         req = self._get_req()
-        ipnr = req.remote_addr
-        author = req.authname
+        ipnr = req and req.remote_addr or '127.0.0.1'
+        author = req and req.authname or 'trac'
         wne = WikiNotifyEmail(page.env)
         wne.notify("deleted", page, ipnr=ipnr, author=author)
 
     def wiki_page_version_deleted(self, page):
-        req = self._get_req()
-        ipnr = req.remote_addr
-        author = req.authname
         version, time, author, comment, ipnr = page.get_history().next()
         wne = WikiNotifyEmail(page.env)
         wne.notify("deleted_version", page, version=version+1, author=author, ipnr=ipnr)
 
     def wiki_page_renamed(self, page, old_name):
         req = self._get_req()
-        ipnr = req.remote_addr
-        author = req.authname
-        redirect = req.args.get('redirect')
+        ipnr = req and req.remote_addr or '127.0.0.1'
+        author = req and req.authname or 'trac'
+        redirect = req and req.args.get('redirect') or None
         self._watch_renamed_page(page.name, old_name)
         wne = WikiNotifyEmail(page.env)
         wne.notify("renamed", page, author=author, ipnr=ipnr, redirect=redirect, old_name=old_name)

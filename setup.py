@@ -6,7 +6,7 @@ import re
 from setuptools import setup, find_packages
 
 PACKAGE = 'TracWikiNotification'
-VERSION = '0.4.2'
+VERSION = '0.4.3'
 AUTHOR = 'Pedro Algarvio'
 AUTHOR_EMAIL = 'ufs@ufsoft.org'
 SUMMARY = "Trac Plugin to allow email notification of changes on wiki pages"
@@ -19,21 +19,21 @@ setup(
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     url=HOME_PAGE,
-    download_url='http://python.org/pypi/TracWikiNotification',
+    download_url='https://python.org/pypi/TracWikiNotification',
     description=SUMMARY,
     long_description=re.sub(r'(\.\.[\s]*[\w]*::[\s]*[\w+]*\n)+', r'::\n',
                             open('README.rst').read()),
     license=LICENSE,
-    platforms="OS Independent - Anywhere Python and Trac >=0.11 is known to run.",
-    install_requires = ['Trac>0.10.99', 'Genshi>=0.5dev'],
+    platforms="OS Independent - Anywhere Python and Trac >=0.11 runs.",
+    install_requires=['Trac'],
     packages=find_packages(),
     package_data={'WikiNotification': ['templates/*.html', 'templates/*.txt']},
-    entry_points = {
+    entry_points={
         'trac.plugins': [
             'wikinotification = WikiNotification',
         ]
     },
-    keywords = "trac plugin wiki notification",
+    keywords="trac plugin wiki notification",
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
