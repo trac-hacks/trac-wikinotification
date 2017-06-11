@@ -20,7 +20,7 @@ from trac.core import *
 from trac.util.text import CRLF
 from trac.wiki.model import WikiPage
 from trac.versioncontrol.diff import unified_diff
-from trac.notification import NotifyEmail, NotificationSystem
+from trac.notification import Notify, NotifyEmail, NotificationSystem
 from trac.config import Option, BoolOption, ListOption, IntOption
 from trac.util.translation import _, deactivate, reactivate
 from trac.resource import Resource
@@ -95,12 +95,13 @@ class WikiNotifyEmail(NotifyEmail):
     wikidiff = None
 
     def __init__(self, env):
-        NotifyEmail.__init__(self, env)
+        super(WikiNotifyEmail, self).__init__(env)
 
-        self.from_email = self.config.get('wiki-notification', 'from_email')
-        self.from_name = self.config.get('wiki-notification', 'from_name') or self.env.project_name
-        self.banned_addresses = self.config.getlist('wiki-notification',
-                                                    'banned_addresses')
+        wns = WikiNotificationSystem(self.env)
+        self.from_email = wns.from_email or \
+                          self.config.get('notification', 'smtp_from')
+        self.from_name = wns.from_name or self.env.project_name
+        self.banned_addresses = wns.banned_addresses
 
     def notify(self, action, page,
                version=None,
@@ -149,9 +150,25 @@ class WikiNotifyEmail(NotifyEmail):
                 self.wikidiff = diff
         self.data["wikidiff"] = self.wikidiff
 
-        subject = self.format_subject(action.replace('_', ' '))
+        self.subject = self.format_subject(action.replace('_', ' '))
+        config = self.config['notification']
+        if not config.getbool('smtp_enabled'):
+            return
+        self.replyto_email = config.get('smtp_replyto')
+        self.from_email = self.from_email or self.replyto_email
+        if not self.from_email and not self.replyto_email:
+            message = tag(
+                tag.p(_('Unable to send email due to identity crisis.')),
+                # convert explicitly to `Fragment` to avoid breaking message
+                # when passing `LazyProxy` object to `Fragment`
+                tag.p(to_fragment(tag_(
+                    "Neither %(from_)s nor %(reply_to)s are specified in the "
+                    "configuration.",
+                    from_=tag.strong('[notification] smtp_from'),
+                    reply_to=tag.strong('[notification] smtp_replyto')))))
+            raise TracError(message, _('SMTP Notification Error'))
 
-        NotifyEmail.notify(self, page.name, subject)
+        Notify.notify(self, page.name)
 
     def get_recipients(self, pagename):
         QUERY_SIDS = """SELECT sid from session_attribute
