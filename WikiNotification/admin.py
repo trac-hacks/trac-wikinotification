@@ -20,6 +20,7 @@ from trac.config import Option
 from genshi.builder import tag
 from genshi.core import Markup
 
+
 class WikiNotificationAdminPanel(Component):
     implements(ITemplateProvider, IAdminPanelProvider)
 
@@ -60,14 +61,14 @@ class WikiNotificationAdminPanel(Component):
         errors = {}
         if not self.config.get('project', 'url', None):
             errors['Project Url'] = "You have not yet defined the project's" + \
-            " 'url' setting under the 'project' section on 'trac.ini'."
+                " 'url' setting under the 'project' section on 'trac.ini'."
 
         if not self.config.get('project', 'admin', None):
             errors['Project Admin'] = "You have not yet defined the " + \
-            "project's 'admin' email address setting under the 'project' " + \
-            "section on 'trac.ini'"
+                "project's 'admin' email address setting under the 'project' " + \
+                "section on 'trac.ini'"
         self.options['errors'] = errors
-        #return errors
+        # return errors
 
     def _do_config(self, req, cat, page, path_info):
 
@@ -77,7 +78,7 @@ class WikiNotificationAdminPanel(Component):
             if option.name in ('use_public_cc', 'attach_diff'):
                 value = self.config.getbool('wiki-notification', option.name,
                                             option.default)
-                if value==True:
+                if value == True:
                     option.checked = 'checked'
                 else:
                     option.checked = None
@@ -102,7 +103,7 @@ class WikiNotificationAdminPanel(Component):
                            'attach_diff', 'subject_template', 'from_name'):
                 if option in ('use_public_cc', 'attach_diff'):
                     self.config.set('wiki-notification', option,
-                                    (req.args.get(option) == 'yes') and \
+                                    (req.args.get(option) == 'yes') and
                                     'true' or 'false')
                 else:
                     self.config.set('wiki-notification', option,
@@ -123,4 +124,4 @@ class WikiNotificationAdminPanel(Component):
             notified_users.append(attrs)
 
         return 'admin_user_notifications.html', {'wpages': notified_users,
-                                                 'wikiurl':req.href.wiki()}
+                                                 'wikiurl': req.href.wiki()}

@@ -35,6 +35,7 @@ diff_header = """Index: %(name)s
 +++ %(name)s (version: %(version)s)
 """
 
+
 class WikiNotificationSystem(Component):
     from_email = Option(
         'wiki-notification', 'from_email', 'trac+wiki@localhost',
@@ -99,7 +100,7 @@ class WikiNotifyEmail(NotifyEmail):
 
         wns = WikiNotificationSystem(self.env)
         self.from_email = wns.from_email or \
-                          self.config.get('notification', 'smtp_from')
+            self.config.get('notification', 'smtp_from')
         self.from_name = wns.from_name or self.env.project_name
         self.banned_addresses = wns.banned_addresses
 
@@ -124,26 +125,26 @@ class WikiNotifyEmail(NotifyEmail):
         if action == "added":
             self.newwiki = True
 
-        self.data['name']= page.name
-        self.data['old_name']= old_name
-        self.data['redirect']= redirect
-        self.data['text']= page.text
-        self.data['version']= version
-        self.data['author']= author
-        self.data['comment']= comment
-        self.data['ip']= ipnr
-        self.data['action']= action
-        self.data['link']= self.env.abs_href.wiki(page.name)
+        self.data['name'] = page.name
+        self.data['old_name'] = old_name
+        self.data['redirect'] = redirect
+        self.data['text'] = page.text
+        self.data['version'] = version
+        self.data['author'] = author
+        self.data['comment'] = comment
+        self.data['ip'] = ipnr
+        self.data['action'] = action
+        self.data['link'] = self.env.abs_href.wiki(page.name)
         self.data['linkdiff'] = self.env.abs_href.wiki(page.name, action='diff',
                                                        version=page.version)
         if page.version > 0 and action == 'modified':
             diff = diff_header % {'name': self.page.name,
                                   'version': self.page.version,
-                                  'oldversion': self.page.version -1
-                                 }
+                                  'oldversion': self.page.version - 1
+                                  }
             oldpage = WikiPage(self.env, page.name, page.version - 1)
-            self.data["oldversion"]= oldpage.version
-            self.data["oldtext"]= oldpage.text
+            self.data["oldversion"] = oldpage.version
+            self.data["oldtext"] = oldpage.text
             for line in unified_diff(oldpage.text.splitlines(),
                                      page.text.splitlines(), context=3):
                 diff += "%s\n" % line
@@ -179,7 +180,8 @@ class WikiNotifyEmail(NotifyEmail):
         tos = []
         with self.env.db_query as db:
             cursor = db.cursor()
-            cursor.execute(QUERY_SIDS, ('watched_pages', '%,'+pagename+',%'))
+            cursor.execute(
+                QUERY_SIDS, ('watched_pages', '%,' + pagename + ',%'))
             sids = cursor.fetchall()
             self.env.log.debug("SID'S TO NOTIFY: %s", sids)
             perm = PermissionSystem(self.env)
@@ -217,21 +219,23 @@ class WikiNotifyEmail(NotifyEmail):
         public_cc = self.config.getbool('wiki-notification', 'use_public_cc')
         headers = {}
         headers['X-Mailer'] = 'Trac %s, by Edgewall Software' % __version__
-        headers['X-Trac-Version'] =  __version__
-        headers['X-Trac-Project'] =  self.env.project_name
+        headers['X-Trac-Version'] = __version__
+        headers['X-Trac-Project'] = self.env.project_name
         headers['X-URL'] = self.env.project_url
         headers['Precedence'] = 'bulk'
         headers['Auto-Submitted'] = 'auto-generated'
         headers['Subject'] = self.subject
-        headers['From'] = (self.from_name, self.from_email) if self.from_name else self.from_email
+        headers['From'] = (
+            self.from_name, self.from_email) if self.from_name else self.from_email
         headers['Reply-To'] = self.replyto_email
 
         def build_addresses(rcpts):
             """Format and remove invalid addresses"""
-            return filter(lambda x: x, \
+            return filter(lambda x: x,
                           [self.get_smtp_address(addr) for addr in rcpts])
 
         blocked_addresses = []
+
         def remove_dup(rcpts, all):
             """Remove duplicates"""
             tmp = []
@@ -246,8 +250,10 @@ class WikiNotifyEmail(NotifyEmail):
 
         toaddrs = build_addresses(torcpts)
         ccaddrs = build_addresses(ccrcpts)
-        accaddrs = build_addresses(self.config.getlist('wiki-notification', 'smtp_always_cc', []))
-        bccaddrs = build_addresses(self.config.getlist('wiki-notification', 'smtp_always_bcc', []))
+        accaddrs = build_addresses(self.config.getlist(
+            'wiki-notification', 'smtp_always_cc', []))
+        bccaddrs = build_addresses(self.config.getlist(
+            'wiki-notification', 'smtp_always_bcc', []))
 
         recipients = []
         (toaddrs, recipients) = remove_dup(toaddrs, recipients)
@@ -287,7 +293,8 @@ class WikiNotifyEmail(NotifyEmail):
             msg.attach(mail)
             try:
                 # The Diff Attachment
-                attach = MIMEText(self.wikidiff.encode('utf-8'), 'x-patch', charset)
+                attach = MIMEText(self.wikidiff.encode(
+                    'utf-8'), 'x-patch', charset)
                 attach.add_header('Content-Disposition', 'inline',
                                   filename=self.page.name + '.diff')
                 msg.attach(attach)
@@ -297,11 +304,12 @@ class WikiNotifyEmail(NotifyEmail):
         else:
             msg = MIMEText(body, 'plain', charset)
 
-        self.add_headers(msg, headers);
-        self.add_headers(msg, mime_headers);
+        self.add_headers(msg, headers)
+        self.add_headers(msg, mime_headers)
         self.env.log.info("Sending notification to %s" % (recipients,))
         try:
-            NotificationSystem(self.env).send_email(self.from_email, recipients, msg.as_string())
+            NotificationSystem(self.env).send_email(
+                self.from_email, recipients, msg.as_string())
         except Exception, err:
             self.env.log.debug('Notification could not be sent: %r', err)
 

@@ -19,6 +19,7 @@ from trac.wiki.api import IWikiChangeListener
 
 from WikiNotification.notification import WikiNotifyEmail
 
+
 class WikiNotificationChangeListener(Component):
     """Class that listens for wiki changes."""
     implements(IWikiChangeListener)
@@ -61,7 +62,8 @@ class WikiNotificationChangeListener(Component):
     def wiki_page_version_deleted(self, page):
         version, time, author, comment, ipnr = page.get_history().next()
         wne = WikiNotifyEmail(page.env)
-        wne.notify("deleted_version", page, version=version+1, author=author, ipnr=ipnr)
+        wne.notify("deleted_version", page, version=version +
+                   1, author=author, ipnr=ipnr)
 
     def wiki_page_renamed(self, page, old_name):
         req = self._get_req()
@@ -70,9 +72,11 @@ class WikiNotificationChangeListener(Component):
         redirect = req and req.args.get('redirect') or None
         self._watch_renamed_page(page.name, old_name)
         wne = WikiNotifyEmail(page.env)
-        wne.notify("renamed", page, author=author, ipnr=ipnr, redirect=redirect, old_name=old_name)
+        wne.notify("renamed", page, author=author, ipnr=ipnr,
+                   redirect=redirect, old_name=old_name)
 
     def _watch_renamed_page(self, pagename, old_pagename):
         with self.env.db_transaction as db:
             cursor = db.cursor()
-            cursor.execute("UPDATE session_attribute SET value=value || %s WHERE name=%s AND value LIKE %s AND value NOT LIKE %s", ('%s,' % pagename, 'watched_pages', '%,' + old_pagename + ',%', '%,' + pagename + ',%'))
+            cursor.execute("UPDATE session_attribute SET value=value || %s WHERE name=%s AND value LIKE %s AND value NOT LIKE %s",
+                           ('%s,' % pagename, 'watched_pages', '%,' + old_pagename + ',%', '%,' + pagename + ',%'))

@@ -24,6 +24,7 @@ from pkg_resources import resource_filename
 from genshi.builder import tag
 from genshi.filters.transform import Transformer
 
+
 class WikiNotificationWebModule(Component):
 
     implements(INavigationContributor, IRequestHandler, ITemplateProvider,
@@ -51,7 +52,6 @@ class WikiNotificationWebModule(Component):
                             title="Wiki Pages Change Notifications",
                             href=req.href.notification()))
 
-
     # ITemplateStreamFilter method
     def filter_stream(self, req, method, filename, stream, data):
         #self.log.debug('ITemplateStreamFilter method')
@@ -64,15 +64,14 @@ class WikiNotificationWebModule(Component):
         watched = self._get_watched_pages(req)
         if page in watched:
             link = tag.a('Un-Watch Page', title='Un-Watch Page',
-                            href=req.href.notification(page))
+                         href=req.href.notification(page))
         else:
             link = tag.a('Watch Page', title='Watch Page',
-                            href=req.href.notification(page))
+                         href=req.href.notification(page))
         #self.log.debug('Transforming output...')
         return stream | Transformer(
             '//div[@id="ctxtnav"]/ul/li[@class="last"]'
-        ).attr('class',None).after(tag.li(link,class_="last"))
-
+        ).attr('class', None).after(tag.li(link, class_="last"))
 
     # IRequestHandler methods
     def match_request(self, req):
@@ -87,12 +86,12 @@ class WikiNotificationWebModule(Component):
         req.perm.require('WIKI_VIEW')
 
         if 'email' not in req.session:
-            data = { 'notification' : {'error':True},
-                    'prefs': {'url':req.href.prefs() }}
+            data = {'notification': {'error': True},
+                    'prefs': {'url': req.href.prefs()}}
             return 'notification.html', data, None
 
-        notification = {'wikiurl':req.href.wiki(),
-                        'my_not_url':req.href.notification()}
+        notification = {'wikiurl': req.href.wiki(),
+                        'my_not_url': req.href.notification()}
         try:
             notification['redirect_time'] = \
                 req.session['watched_pages.redirect_time']
@@ -107,35 +106,35 @@ class WikiNotificationWebModule(Component):
 #        self.log.debug('WATCHED PAGES YY: %s', watched)
         if wikipage:
             if wikipage in watched:
-                notification['action']='unwatch'
+                notification['action'] = 'unwatch'
                 self._unwatch_page(req, wikipage)
             else:
                 self._watch_page(req, wikipage)
-                notification['action']='watch'
-            notification['wikipage']= wikipage
-            notification['redir']= req.href.wiki(wikipage)
-            notification['showlist']= False
-            notification['removelist']= [wikipage]
+                notification['action'] = 'watch'
+            notification['wikipage'] = wikipage
+            notification['redir'] = req.href.wiki(wikipage)
+            notification['showlist'] = False
+            notification['removelist'] = [wikipage]
         else:
             if req.method == 'POST' and req.args.get('remove'):
                 sel = req.args.get('sel')
                 sel = isinstance(sel, list) and sel or [sel]
                 for wikipage in sel:
                     self._unwatch_page(req, wikipage)
-                notification['redir']= req.href.notification()
-                notification['removelist']= sel
-                notification['action']='unwatch'
+                notification['redir'] = req.href.notification()
+                notification['removelist'] = sel
+                notification['action'] = 'unwatch'
             elif req.method == 'POST' and req.args.get('update'):
                 notification['redirect_time'] = \
                     req.session['watched_pages.redirect_time'] = \
-                        req.args.get('redirect_time')
-                notification['showlist']= True
-                notification['list']= watched
+                    req.args.get('redirect_time')
+                notification['showlist'] = True
+                notification['list'] = watched
             else:
-                notification['showlist']= True
-                notification['list']= watched
+                notification['showlist'] = True
+                notification['list'] = watched
 
-        return 'notification.html', {'notification':notification}, None
+        return 'notification.html', {'notification': notification}, None
 
     # Internal methods
     def _get_watched_pages(self, req):
@@ -149,13 +148,13 @@ class WikiNotificationWebModule(Component):
     def _watch_page(self, req, page):
         watched = self._get_watched_pages(req)
         watched.append(page)
-        req.session['watched_pages'] = ','+','.join(watched)+','
+        req.session['watched_pages'] = ',' + ','.join(watched) + ','
         self._cleanup_session(req)
 
     def _unwatch_page(self, req, page):
         watched = self._get_watched_pages(req)
         watched.remove(page)
-        req.session['watched_pages'] = ','+','.join(watched)+','
+        req.session['watched_pages'] = ',' + ','.join(watched) + ','
         self._cleanup_session(req)
 
     def _cleanup_session(self, req):
