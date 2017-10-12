@@ -60,7 +60,10 @@ class WikiNotificationChangeListener(Component):
         wne.notify("deleted", page, ipnr=ipnr, author=author)
 
     def wiki_page_version_deleted(self, page):
-        version, time, author, comment, ipnr = page.get_history().next()
+        req = self._get_req()
+        ipnr = req and req.remote_addr or '127.0.0.1'
+        author = req and req.authname or 'trac'
+        version, _time, _author, _comment, _ipnr = page.get_history().next()
         wne = WikiNotifyEmail(page.env)
         wne.notify("deleted_version", page, version=version +
                    1, author=author, ipnr=ipnr)
