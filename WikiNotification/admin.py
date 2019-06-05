@@ -92,7 +92,6 @@ class WikiNotificationAdminPanel(Component):
                                         option.default)
             if value:
                 option.value = value
-            option.doc = option.__doc__.split('\n\n')
             self.options[option.name] = option
 
         self._get_extra_config_errors()

@@ -46,7 +46,7 @@
         wnoptions.smtp_always_cc.value or wnoptions.smtp_always_cc.default
       )}</textarea>
       <p class="help">
-      <py:for each="line in wnoptions.smtp_always_cc.doc">
+      <py:for each="line in wnoptions.smtp_always_cc.doc.split('\n\n')">
         $line<br/>
       </py:for>
       </p>
@@ -60,7 +60,7 @@
         wnoptions.smtp_always_bcc.value or wnoptions.smtp_always_bcc.default
       )}</textarea>
       <p class="help">
-      <py:for each="line in wnoptions.smtp_always_bcc.doc">
+      <py:for each="line in wnoptions.smtp_always_bcc.doc.split('\n\n')">
         $line<br/>
       </py:for>
       </p>
@@ -72,7 +72,7 @@
       <input type="checkbox" id="use_public_cc" name="use_public_cc"
              value="yes" checked="${ wnoptions.use_public_cc.checked }"/>
       <p class="help">
-      <py:for each="line in wnoptions.use_public_cc.doc">
+      <py:for each="line in wnoptions.use_public_cc.doc.split('\n\n')">
         $line<br/>
       </py:for>
       </p>
@@ -112,7 +112,7 @@
         wnoptions.banned_addresses.value or wnoptions.banned_addresses.default
       )}</textarea>
       <p class="help">
-      <py:for each="line in wnoptions.banned_addresses.doc">
+      <py:for each="line in wnoptions.banned_addresses.doc.split('\n\n')">
         $line<br/>
       </py:for>
       </p>
