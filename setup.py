@@ -10,7 +10,7 @@ VERSION = '0.4.4'
 AUTHOR = 'Pedro Algarvio'
 AUTHOR_EMAIL = 'ufs@ufsoft.org'
 SUMMARY = "Trac Plugin to allow email notification of changes on wiki pages"
-HOME_PAGE = 'http://wikinotification.ufsoft.org'
+HOME_PAGE = 'https://trac-hacks.org/wiki/WikiNotificationPlugin'
 LICENSE = 'BSD'
 
 setup(
@@ -19,7 +19,7 @@ setup(
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     url=HOME_PAGE,
-    download_url='https://python.org/pypi/TracWikiNotification',
+    download_url='https://pypi.org/project/TracWikiNotification',
     description=SUMMARY,
     long_description=re.sub(r'(\.\.[\s]*[\w]*::[\s]*[\w+]*\n)+', r'::\n',
                             open('README.rst').read()),

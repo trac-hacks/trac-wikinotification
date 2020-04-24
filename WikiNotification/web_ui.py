@@ -19,9 +19,9 @@ from trac.web.chrome import INavigationContributor, ITemplateProvider
 from trac.web import HTTPNotFound, IRequestHandler
 from trac.web.api import ITemplateStreamFilter
 from trac.config import Option
+from trac.util.html import tag
 
 from pkg_resources import resource_filename
-from genshi.builder import tag
 from genshi.filters.transform import Transformer
 
 
